@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.atlassian.sal.api.auth.LoginUriProvider;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -17,9 +19,15 @@ import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.project.Project;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import lv.ebit.jira.plugins.ConfigResource.Config;
+import lv.ebit.jira.plugins.ConfigResource.Configuration;
 
 
 public class ConfigServlet extends HttpServlet {
@@ -28,12 +36,14 @@ public class ConfigServlet extends HttpServlet {
 	private final LoginUriProvider loginUriProvider;
 	private final TemplateRenderer renderer;
 	private final ProjectManager projectManager;
+	private final PluginSettingsFactory pluginSettingsFactory;
 	
-	public ConfigServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer renderer, ProjectManager projectManager) {
+	public ConfigServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer renderer, ProjectManager projectManager, PluginSettingsFactory pluginSettingsFactory) {
         this.userManager = userManager;
         this.loginUriProvider = loginUriProvider;
         this.renderer = renderer;
         this.projectManager = projectManager;
+        this.pluginSettingsFactory = pluginSettingsFactory;
     }
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -48,6 +58,11 @@ public class ConfigServlet extends HttpServlet {
         Map<String, Object> velocityParams = new HashMap<String, Object>();
         List<Project> projects = this.projectManager.getProjectObjects();
         velocityParams.put("projects", projects);
+        
+        PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+        Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
+        velocityParams.put("configuration",configuration.getConfig());
+        
         response.setContentType("text/html;charset=utf-8");
         renderer.render("templates/config.vm",velocityParams, response.getWriter());
     }
