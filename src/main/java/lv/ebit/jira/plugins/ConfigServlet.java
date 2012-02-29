@@ -18,20 +18,16 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.project.Project;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import lv.ebit.jira.plugins.ConfigResource.Config;
-import lv.ebit.jira.plugins.ConfigResource.Configuration;
+import lv.ebit.jira.plugins.ConfigModel.Configuration;
 
 
 public class ConfigServlet extends HttpServlet {
 	
+	private static final long serialVersionUID = -1902379361320839518L;
 	private final UserManager userManager;
 	private final LoginUriProvider loginUriProvider;
 	private final TemplateRenderer renderer;
