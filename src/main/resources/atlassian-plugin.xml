@@ -12,7 +12,9 @@
  	<component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
 	<component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
 	<component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
- 
+  <component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
+  <component-import key="pluginScheduler" interface="com.atlassian.sal.api.scheduling.PluginScheduler" />
+    
 	<rest key="rest" path="/realsla-config" version="1.0">
     	<description>Provides REST resources for the RealSLA config UI.</description>
 	</rest>
@@ -43,9 +45,13 @@
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
 	
+	<component key="eventListener" class="lv.ebit.jira.plugins.IssueListener">
+    <description>Monitor the incoming JIRA issue events.</description>
+  </component>
 	
-	<servlet key="config-servlet" class="lv.ebit.jira.plugins.ConfigServlet">
+	<servlet key="configServlet" class="lv.ebit.jira.plugins.ConfigServlet">
     	<url-pattern>/realsla/config</url-pattern>
+    	<description>RealSLA configuration GUI</description>
 	</servlet>
 	<resource type="i18n" name="i18n" location="lv.ebit.jira.plugins.i18n" />
 	
