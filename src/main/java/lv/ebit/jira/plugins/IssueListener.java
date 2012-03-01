@@ -11,46 +11,37 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import lv.ebit.jira.plugins.ConfigModel.Configuration;
 
 public class IssueListener implements InitializingBean, DisposableBean {
-	private static final Logger log = LoggerFactory.getLogger(IssueListener.class);
 	private final EventPublisher eventPublisher;
 	private List<Long> validEventsList;
 	private final PluginSettingsFactory pluginSettingsFactory;
+	private static String sampler = "";
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
-		
+	
 		PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
         Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
         
 		if (this.validEventsList.contains(eventTypeId)) {
-			log.error("May be interested in Issue {} event {}", issue.getKey(), eventTypeId);
-			
-			List<String> slaTokens = configuration.slaTokensForProject(issue.getProjectObject().getId());
-			if (slaTokens.size() == 0) {
-				log.error("but not included in any SLA");
-			} else {
-				for (int i = 0; i < slaTokens.size(); i++) {
-					log.error("sla_token send "+slaTokens.get(i));
-				}
-			}
-			
-			
-		} else {
-			log.error("Not interested in Issue {} event {}", issue.getKey(), eventTypeId);
+			Runnable transport = new Transporter(configuration,issue);
+			new Thread(transport).start();
 		}
 	}
-
+	
+	public static void setSampelr(String sampler) {
+		synchronized(IssueListener.sampler) {
+			IssueListener.sampler = IssueListener.sampler + sampler;
+		}
+		
+	}
 	/**
 	 * Constructor.
 	 * 
