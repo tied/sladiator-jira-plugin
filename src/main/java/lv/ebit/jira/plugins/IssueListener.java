@@ -5,11 +5,13 @@ import java.util.List;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
+import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.ApplicationProperties;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,20 +20,23 @@ import lv.ebit.jira.plugins.ConfigModel.Configuration;
 
 public class IssueListener implements InitializingBean, DisposableBean {
 	private final EventPublisher eventPublisher;
+	private final ApplicationProperties applicationProperties;
 	private List<Long> validEventsList;
 	private final PluginSettingsFactory pluginSettingsFactory;
+	private final AvatarService avatarService;
 	private static String sampler = "";
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
-	
+		
 		PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
         Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
         
 		if (this.validEventsList.contains(eventTypeId)) {
-			Runnable transport = new Transporter(configuration,issue);
+			String url = applicationProperties.getBaseUrl()+"/browse/";
+			Runnable transport = new Transporter(url,configuration,issue, eventTypeId, this.avatarService);
 			new Thread(transport).start();
 		}
 	}
@@ -48,9 +53,11 @@ public class IssueListener implements InitializingBean, DisposableBean {
 	 * @param eventPublisher
 	 *            injected {@code EventPublisher} implementation.
 	 */
-	public IssueListener(EventPublisher eventPublisher, PluginSettingsFactory pluginSettingsFactory) {
+	public IssueListener(EventPublisher eventPublisher, PluginSettingsFactory pluginSettingsFactory, ApplicationProperties applicationProperties, AvatarService avatarService) {
+		this.avatarService = avatarService;
 		this.eventPublisher = eventPublisher;
 		this.pluginSettingsFactory = pluginSettingsFactory;
+		this.applicationProperties = applicationProperties;
 		
 		this.validEventsList = new ArrayList<Long>();
 		this.validEventsList.add(EventType.ISSUE_CREATED_ID);

@@ -48,7 +48,16 @@ public final class ConfigModel {
 	public void setSlaToken(String sla_token) {
 		this.sla_token = sla_token;
 	}
+	@XmlElement
+	private String send_assignee;
 
+	public String getSendAssignee() {
+		return this.send_assignee;
+	}
+
+	public void setSendAssignee(String send_assignee) {
+		this.send_assignee = send_assignee;
+	}
 	@XmlElement
 	private List<Long> projects;
 
@@ -71,7 +80,16 @@ public final class ConfigModel {
 			return "";
 		}
 	}
-
+	public boolean isSendAssignee() {
+		return this.send_assignee.equals("1");
+	}
+	public String checkedSendAssignee(){
+		if (this.isSendAssignee()) {
+			return "checked=\"checked\"";
+		} else {
+			return "";
+		}
+	}
 	public boolean isValid() {
 		if (this.getSla().isEmpty()) {
 			this.errors.add("SLA name is required");
@@ -110,6 +128,7 @@ public final class ConfigModel {
 		try {
 			json.put("sla", this.getSla());
 			json.put("sla_token", this.getSlaToken());
+			json.put("send_assignee", this.getSendAssignee());
 			json.put("projects", this.getProjects());
 		} catch (JSONException e) {
 			log.error("Error:" + e.getMessage());
@@ -135,7 +154,7 @@ public final class ConfigModel {
 		public void update(ConfigModel config) {
 			if (config.isValid()) {
 				delete(config);
-				add(config);
+				this.configs.put(config.sla_token, config);
 			}
 		}
 
@@ -144,7 +163,7 @@ public final class ConfigModel {
 		}
 
 		public Configuration(Object configs) {
-			// log.error("initializ config " + configs);
+//			 log.error("initializ config " + configs);
 			if (configs == null || configs == "{}") {
 				this.configs = new HashMap<String, ConfigModel>();
 			} else {
@@ -158,6 +177,12 @@ public final class ConfigModel {
 						ConfigModel config = new ConfigModel();
 						config.setSla(row.get("sla").toString());
 						config.setSlaToken(row.get("sla_token").toString());
+						if (row.isNull("send_assignee")){
+							config.setSendAssignee("0");
+						} else {
+							config.setSendAssignee(row.get("send_assignee").toString());
+						}
+						
 						JSONArray array = (JSONArray) row.get("projects");
 						List<Long> list = new ArrayList<Long>();
 						for (int i = 0; i < array.length(); i++) {
@@ -196,7 +221,7 @@ public final class ConfigModel {
 			} catch (JSONException e) {
 				log.error("Error:" + e.getMessage());
 			}
-			// log.error("new config" + json.toString());
+//			 log.error("new config" + json.toString());
 			return json.toString();
 		}
 	}

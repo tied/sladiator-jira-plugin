@@ -19,14 +19,17 @@ AJS.toInit(function() {
           + AJS.$("#row" + row + "-edit input[name='sla']").val()
           + '","sla_token":"'
           + AJS.$("#row" + row + "-edit input[name='sla_token']").val()
-          + '","projects":[' + AJS.$("#row" + row + "-edit select").val()
-          + '] }',
+          + '", "send_assignee":"'
+          + (AJS.$("#row" + row + "-edit input[name='send_assignee']").is(':checked') ? 1
+              : 0) + '","projects":['
+          + AJS.$("#row" + row + "-edit select").val() + '] }',
       processData : false,
       success : function(data, textStatus) {
         if (data != "") {
-          AJS.$("#row" + row + "-edit .formErrors").html(data.split(".").map(function(e) {
-            return "<span class='errMsg'>" + e + "</span>"
-          }).join("")).show();
+          AJS.$("#row" + row + "-edit .formErrors").html(
+              data.split(".").map(function(e) {
+                return "<span class='errMsg'>" + e + "</span>"
+              }).join("")).show();
         } else {
           window.location.reload();
         }
@@ -38,10 +41,14 @@ AJS.toInit(function() {
       url : baseUrl + "/rest/realsla-config/1.0/",
       type : "POST",
       contentType : "application/json",
-      data : '{ "sla": "' + AJS.$("#newRecord input[name='sla']").val()
+      data : '{ "sla": "'
+          + AJS.$("#newRecord input[name='sla']").val()
           + '","sla_token":"'
           + AJS.$("#newRecord input[name='sla_token']").val()
-          + '","projects":[' + AJS.$("#newRecord select").val() + '] }',
+          + '", "send_assignee":"'
+          + (AJS.$("#newRecord input[name='send_assignee']").is(':checked') ? 1
+              : 0) + '","projects":[' + AJS.$("#newRecord select").val()
+          + '] }',
       processData : false,
       success : function(data, textStatus) {
         if (data != "") {

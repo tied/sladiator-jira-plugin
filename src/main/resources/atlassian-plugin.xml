@@ -14,6 +14,7 @@
 	<component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
   <component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
   <component-import key="pluginScheduler" interface="com.atlassian.sal.api.scheduling.PluginScheduler" />
+  <component-import key="avatarService" interface="com.atlassian.jira.avatar.AvatarService" />
     
 	<rest key="rest" path="/realsla-config" version="1.0">
     	<description>Provides REST resources for the RealSLA config UI.</description>

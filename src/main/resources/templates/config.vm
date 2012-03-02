@@ -44,16 +44,20 @@
                     <div class="formErrors" style="display:none"></div>
                     <fieldset>
                       <div class="field-group">
-                        <label>$i18n.getText("realsla.config.sla")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-                        <input class="text " maxlength="150" name="sla" type="text">
+                        <label for="new_sla">$i18n.getText("realsla.config.sla")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+                        <input class="text " maxlength="150" name="sla" type="text" id="new_sla">
                       </div>
                       <div class="field-group">
-                        <label>$i18n.getText("realsla.config.sla_token")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-                        <input class="text " maxlength="150" name="sla_token" type="text">
+                        <label for="new_sla_token">$i18n.getText("realsla.config.sla_token")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+                        <input class="text " maxlength="150" name="sla_token" type="text" id="new_sla_token">
                       </div>
                       <div class="field-group">
-                        <label>$i18n.getText("realsla.config.projects")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-                        <select name="project[]" multiple="multiple">
+                        <label for="new_send_assignee">$i18n.getText("realsla.config.send_assignee")</label>
+                        <input class="checkbox " name="send_assignee" type="checkbox" value="1" id="new_send_assignee">
+                      </div>
+                      <div class="field-group">
+                        <label for="new_projects">$i18n.getText("realsla.config.projects")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+                        <select name="project[]" multiple="multiple" id="new_projects">
 			                    #foreach ($project in $projects) 
                             <option value="$project.getId()">$project.getName() ($project.getKey())</option>
                           #end
@@ -87,16 +91,20 @@
 	                   <div class="formErrors" style="display:none"></div>
 	                    <fieldset>
 	                      <div class="field-group">
-	                        <label>$i18n.getText("realsla.config.sla")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-	                        <input class="text " maxlength="150" name="sla" type="text" value="$config.getSla()">
+	                        <label for="sla$config.getSlaToken()">$i18n.getText("realsla.config.sla")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+	                        <input class="text " maxlength="150" name="sla" type="text" value="$config.getSla()" id="sla$config.getSlaToken()">
 	                      </div>
 	                      <div class="field-group">
-	                        <label>$i18n.getText("realsla.config.sla_token")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-	                        <input class="text " maxlength="150" name="sla_token" type="text" value="$config.getSlaToken()">
+	                        <label for="sla_token$config.getSlaToken()">$i18n.getText("realsla.config.sla_token")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+	                        <input class="text " maxlength="150" name="sla_token" type="text" value="$config.getSlaToken()" id="sla_token$config.getSlaToken()">
 	                      </div>
 	                      <div class="field-group">
-	                        <label>$i18n.getText("realsla.config.projects")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-	                        <select name="project[]" multiple="multiple">
+	                        <label for="send_assignee$config.getSlaToken()">$i18n.getText("realsla.config.send_assignee")</label>
+	                        <input class="checkbox " name="send_assignee" $config.checkedSendAssignee() type="checkbox" value="1" id="send_assignee$config.getSlaToken()">
+	                      </div>
+	                      <div class="field-group">
+	                        <label for="projects$config.getSlaToken()">$i18n.getText("realsla.config.projects")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+	                        <select name="project[]" multiple="multiple" id="projects$config.getSlaToken()">
 	                          #foreach ($project in $projects) 
 	                            <option value="$project.getId()" $config.selectedProject($project.getId())>$project.getName() ($project.getKey())</option>
 	                          #end
