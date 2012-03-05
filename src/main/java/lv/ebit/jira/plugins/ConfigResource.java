@@ -45,11 +45,11 @@ public class ConfigResource {
 		
 		transactionTemplate.execute(new TransactionCallback() {
 			public Object doInTransaction() {
-				PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-				Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
+				PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+				Configuration configuration = new Configuration(pluginSettings.get("configuration"));
 				configuration.add(config);
 				if (config.getErrors().isEmpty()) {
-					pluginSettings.put(Configuration.KEY,configuration.toString());
+					pluginSettings.put("configuration",configuration.toString());
 				}
 				return null;
 			}
@@ -68,10 +68,10 @@ public class ConfigResource {
 		
 		transactionTemplate.execute(new TransactionCallback() {
 			public Object doInTransaction() {
-				PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-				Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
+				PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+				Configuration configuration = new Configuration(pluginSettings.get("configuration"));
 				configuration.delete(config);
-				pluginSettings.put(Configuration.KEY,configuration.toString());
+				pluginSettings.put("configuration",configuration.toString());
 				return null;
 			}
 		});
@@ -89,11 +89,11 @@ public class ConfigResource {
 		
 		transactionTemplate.execute(new TransactionCallback() {
 			public Object doInTransaction() {
-				PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-				Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
+				PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+				Configuration configuration = new Configuration(pluginSettings.get("configuration"));
 				configuration.update(config);
 				if (config.getErrors().isEmpty()) {
-					pluginSettings.put(Configuration.KEY,configuration.toString());
+					pluginSettings.put("configuration",configuration.toString());
 				}
 				return null;
 			}

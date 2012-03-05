@@ -117,29 +117,20 @@
 	                </td>
 	              </tr>
               #end
-<!--             
-              <tr class="zebra">
-                <td><a href="http://realsla.com/token">Second SLA (token_for_2)</a></td>
-                <td>Project 1 (ONE), Project 2 (TWO), Project 3 (THREE)</td>
-                <td>
-                  <ul class="operations-list">
-                    <li><a class="sla-edit" href="#">$i18n.getText("realsla.config.edit")</a></li>
-                    <li><a class="sla-delete" href="#">$i18n.getText("realsla.config.delete")</a></li>
-                  </ul>
-                </td>
-              </tr>
-              <tr>
-                <td><a href="http://realsla.com/token">Third SLA (token_for_3)</a></td>
-                <td>Project 1 (ONE), Project 2 (TWO), Project 3 (THREE)</td>
-                <td>
-                  <ul class="operations-list">
-                    <li><a class="sla-edit" href="#">$i18n.getText("realsla.config.edit")</a></li>
-                    <li><a class="sla-delete" href="#">$i18n.getText("realsla.config.delete")</a></li>
-                  </ul>
-                </td>
-              </tr> -->
             </tbody>
           </table>
+        </td>
+      </tr>
+      <tr>
+        <td class="errors">
+          #if (!$errors.isEmpty())
+            <h3 class="formtitle">$i18n.getText("realsla.config.errors")</h3>
+            #foreach ($error in $errors)
+              #if (!$error.isEmpty()) 
+                <a href="/jira/browse/$error">$error</a>
+               #end
+            #end
+          #end
         </td>
       </tr>
     </table>

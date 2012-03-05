@@ -18,6 +18,8 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.project.Project;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,9 +57,16 @@ public class ConfigServlet extends HttpServlet {
         List<Project> projects = this.projectManager.getProjectObjects();
         velocityParams.put("projects", projects);
         
-        PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-        Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
+        PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+		Configuration configuration = new Configuration(pluginSettings.get("configuration"));
         velocityParams.put("configuration",configuration.getConfig());
+        
+        List<String> errors = new ArrayList<String>(); 
+        if (pluginSettings.get("errors") != null) {
+        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors").toString().split(",")));
+        	errors.remove("");
+        }
+        velocityParams.put("errors",errors);
         
         response.setContentType("text/html;charset=utf-8");
         renderer.render("templates/config.vm",velocityParams, response.getWriter());

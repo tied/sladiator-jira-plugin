@@ -2,6 +2,7 @@ package lv.ebit.jira.plugins;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
@@ -12,6 +13,7 @@ import com.atlassian.jira.issue.Issue;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.ApplicationProperties;
+import com.google.common.base.Joiner;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -22,18 +24,17 @@ public class IssueListener implements InitializingBean, DisposableBean {
 	private final EventPublisher eventPublisher;
 	private final ApplicationProperties applicationProperties;
 	private List<Long> validEventsList;
-	private final PluginSettingsFactory pluginSettingsFactory;
+	private static PluginSettingsFactory pluginSettingsFactory;
 	private final AvatarService avatarService;
-	private static String sampler = "";
 
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
 		
-		PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-        Configuration configuration = new Configuration(pluginSettings.get(Configuration.KEY));
-        
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+		Configuration configuration = new Configuration(pluginSettings.get("configuration"));
+		
 		if (this.validEventsList.contains(eventTypeId)) {
 			String url = applicationProperties.getBaseUrl()+"/browse/";
 			Runnable transport = new Transporter(url,configuration,issue, eventTypeId, this.avatarService);
@@ -41,11 +42,30 @@ public class IssueListener implements InitializingBean, DisposableBean {
 		}
 	}
 	
-	public static void setSampelr(String sampler) {
-		synchronized(IssueListener.sampler) {
-			IssueListener.sampler = IssueListener.sampler + sampler;
+	public static void addFailedIssue(String key) {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+		synchronized(pluginSettings) {
+			List<String> errors = new ArrayList<String>(); 
+	        if (pluginSettings.get("errors") != null) {
+	        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors").toString().split(",")));
+	        	errors.remove("");
+	        }
+	        errors.remove(key);
+	        errors.add(key);
+			pluginSettings.put("errors",Joiner.on(",").skipNulls().join(errors));
 		}
-		
+	}
+	public static void removeFailedIssue(String key) {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+		synchronized(pluginSettings) {
+			List<String> errors = new ArrayList<String>(); 
+	        if (pluginSettings.get("errors") != null) {
+	        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors").toString().split(",")));
+	        	errors.remove("");
+	        }
+			errors.remove(key);
+			pluginSettings.put("errors",Joiner.on(",").skipNulls().join(errors));
+		}
 	}
 	/**
 	 * Constructor.
@@ -56,7 +76,7 @@ public class IssueListener implements InitializingBean, DisposableBean {
 	public IssueListener(EventPublisher eventPublisher, PluginSettingsFactory pluginSettingsFactory, ApplicationProperties applicationProperties, AvatarService avatarService) {
 		this.avatarService = avatarService;
 		this.eventPublisher = eventPublisher;
-		this.pluginSettingsFactory = pluginSettingsFactory;
+		IssueListener.pluginSettingsFactory = pluginSettingsFactory;
 		this.applicationProperties = applicationProperties;
 		
 		this.validEventsList = new ArrayList<Long>();
