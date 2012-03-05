@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -35,13 +36,15 @@ public class ConfigServlet extends HttpServlet {
 	private final TemplateRenderer renderer;
 	private final ProjectManager projectManager;
 	private final PluginSettingsFactory pluginSettingsFactory;
+	private final ApplicationProperties applicationProperties;
 	
-	public ConfigServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer renderer, ProjectManager projectManager, PluginSettingsFactory pluginSettingsFactory) {
+	public ConfigServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer renderer, ProjectManager projectManager, PluginSettingsFactory pluginSettingsFactory, ApplicationProperties applicationProperties) {
         this.userManager = userManager;
         this.loginUriProvider = loginUriProvider;
         this.renderer = renderer;
         this.projectManager = projectManager;
         this.pluginSettingsFactory = pluginSettingsFactory;
+        this.applicationProperties = applicationProperties;
     }
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
@@ -61,6 +64,7 @@ public class ConfigServlet extends HttpServlet {
 		Configuration configuration = new Configuration(pluginSettings.get("configuration"));
         velocityParams.put("configuration",configuration.getConfig());
         
+        velocityParams.put("issue_url",applicationProperties.getBaseUrl()+"/browse/");
         List<String> errors = new ArrayList<String>(); 
         if (pluginSettings.get("errors") != null) {
         	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors").toString().split(",")));

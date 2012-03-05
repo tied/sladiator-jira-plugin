@@ -127,7 +127,7 @@
             <h3 class="formtitle">$i18n.getText("realsla.config.errors")</h3>
             #foreach ($error in $errors)
               #if (!$error.isEmpty()) 
-                <a href="/jira/browse/$error">$error</a>
+                <a href="$issue_url$error">$error</a>
                #end
             #end
           #end
