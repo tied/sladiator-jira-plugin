@@ -1,6 +1,38 @@
 AJS.toInit(function() {
   var baseUrl = AJS.$("meta[name='application-base-url']").attr("content");
 
+  function teleport() {
+    AJS.$.ajax({
+      url : baseUrl + "/rest/realsla-teleport/1.0/teleport/",
+      type : "POST",
+      contentType : "application/json",
+      data : '{ "date_from": "' + AJS.$("#date_from").val() + '" }',
+      processData : true,
+      beforeSend : function(jqXHR, settings) {
+        AJS.$("#freezer").show();
+      },
+      success : function(data, textStatus) {
+        AJS.$("#freezer").hide();
+        if (data != "") {
+          AJS.$(".teleport .formErrors").hide();
+          AJS.$(".teleport .success").html(data.split(".").map(function(e) {
+            return "<span>" + e + "</span>"
+          }).join("")).show();
+        } else {
+          AJS.$(".teleport .formErrors").hide();
+        }
+
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        AJS.$("#freezer").hide();
+        AJS.$(".teleport .success").hide();
+        AJS.$(".teleport .formErrors").html(jqXHR.responseText.split(".").map(function(e) {
+          return "<span class='errMsg'>" + e + "</span>"
+        }).join("")).show();
+      }
+    });
+  }
+
   function deleteConfig(row) {
     AJS.$.ajax({
       url : baseUrl + "/rest/realsla-config/1.0/",
@@ -20,8 +52,8 @@ AJS.toInit(function() {
           + '","sla_token":"'
           + AJS.$("#row" + row + "-edit input[name='sla_token']").val()
           + '", "send_assignee":"'
-          + (AJS.$("#row" + row + "-edit input[name='send_assignee']").is(':checked') ? 1
-              : 0) + '","projects":['
+          + (AJS.$("#row" + row + "-edit input[name='send_assignee']").is(
+              ':checked') ? 1 : 0) + '","projects":['
           + AJS.$("#row" + row + "-edit select").val() + '] }',
       processData : false,
       success : function(data, textStatus) {
@@ -106,4 +138,10 @@ AJS.toInit(function() {
     var row = AJS.$(this).attr("data-row");
     updateConfig(row);
   });
+
+  AJS.$(".teleport input[type='submit']").click(function(e) {
+    e.preventDefault();
+    teleport();
+  });
+
 });

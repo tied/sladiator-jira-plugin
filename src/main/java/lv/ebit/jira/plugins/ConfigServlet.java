@@ -71,9 +71,10 @@ public class ConfigServlet extends HttpServlet {
         	errors.remove("");
         }
         velocityParams.put("errors",errors);
-        
         response.setContentType("text/html;charset=utf-8");
         renderer.render("templates/config.vm",velocityParams, response.getWriter());
+        
+        
     }
 	
 	private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException

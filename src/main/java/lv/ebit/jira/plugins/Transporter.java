@@ -83,7 +83,7 @@ public class Transporter implements Runnable {
 			json.putOpt("status", issue.getStatusObject().getName());
 			json.putOpt("project", issue.getProjectObject().getKey());
 			json.putOpt("issue_url", url + issue.getKey());
-
+			
 			// Iterator<ProjectComponent> component =
 			// issue.getComponentObjects().iterator();
 			// List<String> components = new ArrayList<String>();

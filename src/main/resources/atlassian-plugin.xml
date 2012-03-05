@@ -15,10 +15,14 @@
   <component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
   <component-import key="pluginScheduler" interface="com.atlassian.sal.api.scheduling.PluginScheduler" />
   <component-import key="avatarService" interface="com.atlassian.jira.avatar.AvatarService" />
+  <component-import key="searchProvider" interface="com.atlassian.jira.issue.search.SearchProvider" />
     
 	<rest key="rest" path="/realsla-config" version="1.0">
     	<description>Provides REST resources for the RealSLA config UI.</description>
 	</rest>
+	<rest key="teleport" path="/realsla-teleport" version="1.0">
+      <description>Provides Teleport for the RealSLA.</description>
+  </rest>
 
 	<web-item key="jira-menu-item" name="RealSLA Config" section="system.admin/globalsettings" weight="10" application="jira">
     	<description>Link to RealSAL config page.</description> 
