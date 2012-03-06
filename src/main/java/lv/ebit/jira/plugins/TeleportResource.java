@@ -18,12 +18,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.atlassian.jira.user.UserUtils;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.crowd.embedded.api.User;
+import com.opensymphony.user.EntityNotFoundException;
 
 @Path("/teleport/")
 public class TeleportResource {
@@ -39,8 +40,10 @@ public class TeleportResource {
 		this.avatarService = avatarService;
 		this.pluginSettingsFactory = pluginSettingsFactory;
 		this.applicationProperties = applicationProperties;
+		
 	}
 
+	@SuppressWarnings("deprecation")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response post(final TeleportModel config, @Context HttpServletRequest request) {
@@ -63,7 +66,16 @@ public class TeleportResource {
 			errors = errors + "Select at least one SLA.";
 		}
 		if (errors.isEmpty()) {
-			TeleportJob job = new TeleportJob(date_from, config.sla, pluginSettingsFactory, searchProvider, avatarService, applicationProperties, UserUtils.getUser(request.getRemoteUser()));
+			User user = null;
+			//starting from 4.4			
+			// user = com.atlassian.jira.user.UserUtils.getUser(request.getRemoteUser());
+			try {
+				user = com.opensymphony.user.UserManager.getInstance().getUser(request.getRemoteUser());
+			} catch (EntityNotFoundException e1) {
+				
+			}
+			
+			TeleportJob job = new TeleportJob(date_from, config.sla, pluginSettingsFactory, searchProvider, avatarService, applicationProperties, user);
 			job.run();
 			success = job.getTotalProcessed() + " issues sent to RealSLA";
 			return Response.ok(success).build();

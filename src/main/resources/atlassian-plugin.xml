@@ -50,14 +50,15 @@
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
 	
-	<component key="eventListener" class="lv.ebit.jira.plugins.IssueListener">
+	<component key="issue-listener" class="lv.ebit.jira.plugins.IssueListener">
     <description>Monitor the incoming JIRA issue events.</description>
   </component>
 	
-	<servlet key="configServlet" class="lv.ebit.jira.plugins.ConfigServlet">
+	<servlet key="config-servlet" class="lv.ebit.jira.plugins.ConfigServlet" value="enabled">
     	<url-pattern>/realsla/config</url-pattern>
     	<description>RealSLA configuration GUI</description>
 	</servlet>
+	
 	<resource type="i18n" name="i18n" location="lv.ebit.jira.plugins.i18n" />
 	
 	<web-resource name="Config Web Resources" key="resources"> 

@@ -2,6 +2,7 @@ package lv.ebit.jira.plugins;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class Transporter implements Runnable {
 	private String url;
 	private Long eventTypeId;
 	private AvatarService avatarService;
-	private static String realSlaUrl = "http://172.17.1.111:3000/api/tickets/";
+	private static String realSlaUrl = "http://orion.ebit.lv:8088/api/tickets/";
 
 	public Transporter(String url, Configuration configuration, Issue issue, Long eventTypeId, AvatarService avatarService) {
 		this.configuration = configuration;
@@ -116,7 +117,12 @@ public class Transporter implements Runnable {
 		List<JSONObject> retList = new ArrayList<JSONObject>();
 
 		for (GenericValue changeGroup : changeGroups) {
-			Map<String, ? extends Object> paramsItem = MapBuilder.build("group", changeGroup.getLong("id"), "field", "status", "fieldtype", "jira");
+			// starting from 4.4			
+			// Map<String, ? extends Object> paramsItem = MapBuilder.build("group", changeGroup.getLong("id"),"field", "status", "fieldtype", "jira");
+			Map<String, Object> paramsItem = new HashMap<String, Object>(); 
+			paramsItem.put("group", changeGroup.getLong("id"));
+			paramsItem.put("field", "status");
+			paramsItem.put("fieldtype", "jira");
 
 			List<GenericValue> changeItems = delegator.findByAnd("ChangeItem", paramsItem);
 			for (GenericValue changeItem : changeItems) {
