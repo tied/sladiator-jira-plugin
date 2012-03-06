@@ -6,7 +6,7 @@ AJS.toInit(function() {
       url : baseUrl + "/rest/realsla-teleport/1.0/teleport/",
       type : "POST",
       contentType : "application/json",
-      data : '{ "date_from": "' + AJS.$("#date_from").val() + '" }',
+      data : '{ "date_from": "' + AJS.$("#teleport_date_from").val() + '","sla": [' + AJS.$("#teleport_sla").val() + '] }',
       processData : true,
       beforeSend : function(jqXHR, settings) {
         AJS.$("#freezer").show();
@@ -63,6 +63,7 @@ AJS.toInit(function() {
                 return "<span class='errMsg'>" + e + "</span>"
               }).join("")).show();
         } else {
+          jQuery.fn.isDirty = function () {return false;}
           window.location.reload();
         }
       }
@@ -88,6 +89,7 @@ AJS.toInit(function() {
             return "<span class='errMsg'>" + e + "</span>"
           }).join("")).show();
         } else {
+          jQuery.fn.isDirty = function () {return false;}
           window.location.reload();
         }
       }

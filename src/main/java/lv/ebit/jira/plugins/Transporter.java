@@ -110,7 +110,7 @@ public class Transporter implements Runnable {
 
 	public List<JSONObject> getTransitions(Issue issue) throws JSONException {
 		OfBizDelegator delegator = new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
-		Map<String, Long> params = MapBuilder.build("issue", issue.getLong("id"));
+		Map<String, Long> params = MapBuilder.build("issue", issue.getId());
 		List<GenericValue> changeGroups = delegator.findByAnd("ChangeGroup", params);
 
 		List<JSONObject> retList = new ArrayList<JSONObject>();

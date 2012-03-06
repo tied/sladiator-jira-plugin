@@ -197,7 +197,14 @@ public final class ConfigModel {
 
 			}
 		}
-
+		
+		public List<Long> projectListFromSla (List<String> slas) {
+			List<Long> list = new ArrayList<Long>();
+			for (String sla: slas) {
+				list.addAll(this.configs.get(sla).getProjects());
+			}
+			return list;
+		}
 		public List<String> slaTokensForProject(Long project) {
 			List<String> list = new ArrayList<String>();
 			Iterator<Entry<String, ConfigModel>> configs = this.configs.entrySet().iterator();

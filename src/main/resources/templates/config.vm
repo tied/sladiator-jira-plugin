@@ -142,25 +142,31 @@
             <div class="formErrors" style="display:none"></div>
             <div class="success infoBox" style="display:none"></div>
             <div class="field-group aui-field-datepicker">
-              <label for="date_from">$i18n.getText("realsla.config.date_from")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
-	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="date_from"/>
-	            <a href="#" id="date_from-trigger" title="Select a date">
+              <label for="teleport_date_from">$i18n.getText("realsla.config.date_from")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="teleport_date_from"/>
+	            <a href="#" id="teleport_date_from-trigger" title="Select a date">
 	              <span class="aui-icon icon-date">Select a date</span>
 	            </a>
 	            <script type="text/javascript">
 		            Calendar.setup({
 		              firstDay : 0,
-		              inputField : 'date_from',
-		              button : 'date_from-trigger',
+		              inputField : 'teleport_date_from',
+		              button : 'teleport_date_from-trigger',
 		              align : 'Br',
 		              singleClick : true,
 		              useISO8601WeekNumbers : false,
 		              ifFormat : '%e/%m/%Y'
 		            });
 	            </script>
-	            
             </div>
-            
+            <div class="field-group">
+              <label for="teleport_sla">$i18n.getText("realsla.config.for_sla")<span class="aui-icon icon-required"></span><span class="content"> required</span></label>
+              <select name="sla[]" multiple="multiple" id="teleport_sla" class="medium-field">
+                #foreach ($config in $configuration) 
+                  <option value="$config.getSlaToken()">$config.getSla()</option>
+                #end
+              </select>
+             </div>
             <input type="submit" name="save" value="Send to RealSLA" class="button spaced">
           </form>
           <div class="aui-blanket" id="freezer" style="display: none;"></div>
