@@ -6,7 +6,7 @@ AJS.toInit(function() {
       url : baseUrl + "/rest/realsla-teleport/1.0/teleport/",
       type : "POST",
       contentType : "application/json",
-      data : '{ "date_from": "' + AJS.$("#teleport_date_from").val() + '","sla": [' + AJS.$("#teleport_sla").val() + '] }',
+      data : '{ "date_from": "' + AJS.$("#teleport_date_from").val() + '","sla": [' + AJS.$("#teleport_sla").val().map(function(e){return '"'+e+'"'}) + '] }',
       processData : true,
       beforeSend : function(jqXHR, settings) {
         AJS.$("#freezer").show();

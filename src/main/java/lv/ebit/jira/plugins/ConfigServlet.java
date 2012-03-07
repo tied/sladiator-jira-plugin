@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lv.ebit.jira.plugins.ConfigModel.Configuration;
+import lv.ebit.jira.plugins.Transporter;
 
 
 public class ConfigServlet extends HttpServlet {
@@ -71,6 +72,7 @@ public class ConfigServlet extends HttpServlet {
         	errors.remove("");
         }
         velocityParams.put("errors",errors);
+        velocityParams.put("realSlaUrl",Transporter.realSlaUrl);
         response.setContentType("text/html;charset=utf-8");
         renderer.render("templates/config.vm",velocityParams, response.getWriter());
         

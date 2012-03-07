@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+import java.text.SimpleDateFormat;
 
 import lv.ebit.jira.plugins.ConfigModel.Configuration;
 
@@ -39,9 +41,9 @@ public class Transporter implements Runnable {
 	private String url;
 	private Long eventTypeId;
 	private AvatarService avatarService;
-	private static String realSlaUrl = "http://orion.ebit.lv:8088/api/tickets/";
-//	private static String realSlaUrl = "http://172.17.1.111:4444/api/tickets/";
-
+	private static String realSlaUrl = "http://orion.ebit.lv:8088";
+//	public static String realSlaUrl = "http://172.17.1.111:4444";
+	private SimpleDateFormat dateFormat;
 
 	public Transporter(String url, Configuration configuration, Issue issue, Long eventTypeId, AvatarService avatarService) {
 		this.configuration = configuration;
@@ -49,6 +51,8 @@ public class Transporter implements Runnable {
 		this.url = url;
 		this.eventTypeId = eventTypeId;
 		this.avatarService = avatarService;
+		this.dateFormat = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+		this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 
 	@Override
@@ -76,38 +80,39 @@ public class Transporter implements Runnable {
 
 	public JSONObject collectIssueInfo(Issue issue, boolean collectAssignee) throws JSONException {
 		JSONObject json = new JSONObject();
-		
-			json.putOpt("issue_key", issue.getKey());
-			json.putOpt("created_at", issue.getCreated());
-			json.putOpt("updated_at", issue.getUpdated());
-			json.putOpt("due_date", issue.getDueDate());
-			json.putOpt("priority", issue.getPriorityObject().getName());
-			json.putOpt("issue_type", issue.getIssueTypeObject().getName());
-			json.putOpt("status", issue.getStatusObject().getName());
-			json.putOpt("project", issue.getProjectObject().getKey());
-			json.putOpt("issue_url", url + issue.getKey());
-			
-			// Iterator<ProjectComponent> component =
-			// issue.getComponentObjects().iterator();
-			// List<String> components = new ArrayList<String>();
-			// while (component.hasNext()) {
-			// components.add(component.next().getName());
-			// }
-			// json.putOpt("components", components);
-			if (collectAssignee) {
-				User assignee = issue.getAssigneeUser();
-				if (assignee != null) {
-					json.putOpt("assignee", assignee.getDisplayName());
-					json.putOpt("assignee_email", assignee.getEmailAddress());
-					json.putOpt("assignee_avatar_url", this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE));
-				}
+		json.putOpt("issue_key", issue.getKey());
+		json.putOpt("created_at", this.dateFormat.format(issue.getCreated()));
+		json.putOpt("updated_at", this.dateFormat.format(issue.getUpdated()));
+		if (issue.getDueDate() != null) {
+			json.putOpt("due_date", this.dateFormat.format(issue.getDueDate()));
+		}		
+		json.putOpt("priority", issue.getPriorityObject().getName());
+		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
+		json.putOpt("status", issue.getStatusObject().getName());
+		json.putOpt("project", issue.getProjectObject().getKey());
+		json.putOpt("issue_url", url + issue.getKey());
+
+		// Iterator<ProjectComponent> component =
+		// issue.getComponentObjects().iterator();
+		// List<String> components = new ArrayList<String>();
+		// while (component.hasNext()) {
+		// components.add(component.next().getName());
+		// }
+		// json.putOpt("components", components);
+		if (collectAssignee) {
+			User assignee = issue.getAssigneeUser();
+			if (assignee != null) {
+				json.putOpt("assignee", assignee.getDisplayName());
+				json.putOpt("assignee_email", assignee.getEmailAddress());
+				json.putOpt("assignee_avatar_url", this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE));
 			}
-			
-			if (issue.getResolutionObject() != null) {
-				json.putOpt("resolution", issue.getResolutionObject().getName());
-				json.putOpt("resolution_date", issue.getResolutionDate());
-			}
-			json.putOpt("transitions", getTransitions(issue));
+		}
+
+		if (issue.getResolutionObject() != null) {
+			json.putOpt("resolution", issue.getResolutionObject().getName());
+			json.putOpt("resolution_date", this.dateFormat.format(issue.getResolutionDate()));
+		}
+		json.putOpt("transitions", getTransitions(issue));
 		return json;
 	}
 
@@ -119,9 +124,11 @@ public class Transporter implements Runnable {
 		List<JSONObject> retList = new ArrayList<JSONObject>();
 
 		for (GenericValue changeGroup : changeGroups) {
-			// starting from 4.4			
-			// Map<String, ? extends Object> paramsItem = MapBuilder.build("group", changeGroup.getLong("id"),"field", "status", "fieldtype", "jira");
-			Map<String, Object> paramsItem = new HashMap<String, Object>(); 
+			// starting from 4.4
+			// Map<String, ? extends Object> paramsItem =
+			// MapBuilder.build("group", changeGroup.getLong("id"),"field",
+			// "status", "fieldtype", "jira");
+			Map<String, Object> paramsItem = new HashMap<String, Object>();
 			paramsItem.put("group", changeGroup.getLong("id"));
 			paramsItem.put("field", "status");
 			paramsItem.put("fieldtype", "jira");
@@ -129,7 +136,7 @@ public class Transporter implements Runnable {
 			List<GenericValue> changeItems = delegator.findByAnd("ChangeItem", paramsItem);
 			for (GenericValue changeItem : changeItems) {
 				JSONObject json = new JSONObject();
-				json.put("created", changeGroup.getTimestamp("created"));
+				json.put("created", this.dateFormat.format(changeGroup.getTimestamp("created")));
 				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
 				json.put("status_from", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
 				retList.add(json);
@@ -146,23 +153,23 @@ public class Transporter implements Runnable {
 		int statusCode = 0;
 		try {
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID)) {
-				PostMethod httpMethod = new PostMethod(Transporter.realSlaUrl);
+				PostMethod httpMethod = new PostMethod(Transporter.realSlaUrl + "/api/tickets/");
 				httpMethod.setRequestHeader("Content-Type", "application/json");
 				httpMethod.setRequestHeader("SLA_TOKEN", slaToken);
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
 				statusCode = client.executeMethod(httpMethod);
 			} else if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-				DeleteMethod httpMethod = new DeleteMethod(Transporter.realSlaUrl + issue.getKey());
+				DeleteMethod httpMethod = new DeleteMethod(Transporter.realSlaUrl + "/api/tickets/" + issue.getKey());
 				httpMethod.setRequestHeader("Content-Type", "application/json");
 				httpMethod.setRequestHeader("SLA_TOKEN", slaToken);
-				
+
 				statusCode = client.executeMethod(httpMethod);
 			} else {
-				PutMethod httpMethod = new PutMethod(Transporter.realSlaUrl + issue.getKey());
+				PutMethod httpMethod = new PutMethod(Transporter.realSlaUrl + "/api/tickets/" + issue.getKey());
 				httpMethod.setRequestHeader("Content-Type", "application/json");
 				httpMethod.setRequestHeader("SLA_TOKEN", slaToken);
-				
+
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
 				statusCode = client.executeMethod(httpMethod);
 			}
@@ -174,7 +181,7 @@ public class Transporter implements Runnable {
 			log.error(e.getMessage());
 		}
 		if (statusCode != 200) {
-			log.error("statusCode was "+statusCode);
+			log.error("statusCode was " + statusCode);
 			return false;
 		}
 		return true;
