@@ -39,8 +39,8 @@ public class Transporter implements Runnable {
 	private String url;
 	private Long eventTypeId;
 	private AvatarService avatarService;
-   private static String realSlaUrl = "http://orion.ebit.lv:8088/api/tickets/";
-//	private static String realSlaUrl = "http://172.17.1.111:4000/api/tickets/";
+	private static String realSlaUrl = "http://orion.ebit.lv:8088/api/tickets/";
+//	private static String realSlaUrl = "http://172.17.1.111:4444/api/tickets/";
 
 
 	public Transporter(String url, Configuration configuration, Issue issue, Long eventTypeId, AvatarService avatarService) {
