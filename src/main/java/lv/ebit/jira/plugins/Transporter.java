@@ -39,7 +39,9 @@ public class Transporter implements Runnable {
 	private String url;
 	private Long eventTypeId;
 	private AvatarService avatarService;
-	private static String realSlaUrl = "http://orion.ebit.lv:8088/api/tickets/";
+   private static String realSlaUrl = "http://orion.ebit.lv:8088/api/tickets/";
+//	private static String realSlaUrl = "http://172.17.1.111:4000/api/tickets/";
+
 
 	public Transporter(String url, Configuration configuration, Issue issue, Long eventTypeId, AvatarService avatarService) {
 		this.configuration = configuration;
@@ -59,7 +61,7 @@ public class Transporter implements Runnable {
 				JSONObject json;
 				try {
 					json = collectIssueInfo(issue, configuration.getConfig().get(slaTokens.get(i)).isSendAssignee());
-					if (!json.has("error") && sendData(slaTokens.get(i), json.toString())) {
+					if (sendData(slaTokens.get(i), json.toString())) {
 						log.info("Issue {} was sent", issue.getKey());
 					} else {
 						IssueListener.addFailedIssue(issue.getKey());
@@ -171,7 +173,7 @@ public class Transporter implements Runnable {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		if (statusCode != 202) {
+		if (statusCode != 200) {
 			log.error("statusCode was "+statusCode);
 			return false;
 		}
