@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 
 import lv.ebit.jira.plugins.ConfigModel.Configuration;
 
@@ -80,7 +81,7 @@ public class Transporter implements Runnable {
 
 	public JSONObject collectIssueInfo(Issue issue, boolean collectAssignee) throws JSONException {
 		JSONObject json = new JSONObject();
-		json.putOpt("issue_key", issue.getKey());
+		json.putOpt("key", issue.getKey());
 		json.putOpt("created_at", this.dateFormat.format(issue.getCreated()));
 		json.putOpt("updated_at", this.dateFormat.format(issue.getUpdated()));
 		if (issue.getDueDate() != null) {
@@ -90,7 +91,7 @@ public class Transporter implements Runnable {
 		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
 		json.putOpt("status", issue.getStatusObject().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
-		json.putOpt("issue_url", url + issue.getKey());
+		json.putOpt("url", url + issue.getKey());
 
 		// Iterator<ProjectComponent> component =
 		// issue.getComponentObjects().iterator();
@@ -122,7 +123,8 @@ public class Transporter implements Runnable {
 		List<GenericValue> changeGroups = delegator.findByAnd("ChangeGroup", params);
 
 		List<JSONObject> retList = new ArrayList<JSONObject>();
-
+		
+		Timestamp entered_at = issue.getCreated();
 		for (GenericValue changeGroup : changeGroups) {
 			// starting from 4.4
 			// Map<String, ? extends Object> paramsItem =
@@ -136,15 +138,23 @@ public class Transporter implements Runnable {
 			List<GenericValue> changeItems = delegator.findByAnd("ChangeItem", paramsItem);
 			for (GenericValue changeItem : changeItems) {
 				JSONObject json = new JSONObject();
-				json.put("created", this.dateFormat.format(changeGroup.getTimestamp("created")));
+				json.put("entered_at", this.dateFormat.format(entered_at));
+				json.put("exited_at", this.dateFormat.format(changeGroup.getTimestamp("created")));
 				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
-				json.put("status_from", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
+				json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
 				retList.add(json);
+				entered_at = changeGroup.getTimestamp("created");
 				// Deprecated. Use ComponentAccessor instead. Since v4.4.
 				// ManagerFactory.getConstantsManager().getStatusObject(changeItem.getString("newvalue"));
 			}
 
 		}
+		// add current state
+		JSONObject json = new JSONObject();
+		json.put("entered_at", this.dateFormat.format(entered_at));
+		json.put("status", issue.getStatusObject().getName());
+		retList.add(json);
+		
 		return retList;
 	}
 
