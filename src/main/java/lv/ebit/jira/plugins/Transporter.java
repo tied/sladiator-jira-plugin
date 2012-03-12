@@ -42,7 +42,7 @@ public class Transporter implements Runnable {
 	private String url;
 	private Long eventTypeId;
 	private AvatarService avatarService;
-	private static String realSlaUrl = "http://orion.ebit.lv:8088";
+	public static String realSlaUrl = "http://orion.ebit.lv:8088";
 //	public static String realSlaUrl = "http://172.17.1.111:4444";
 	private SimpleDateFormat dateFormat;
 
