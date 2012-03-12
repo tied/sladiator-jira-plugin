@@ -82,10 +82,13 @@ public class Transporter implements Runnable {
 	public JSONObject collectIssueInfo(Issue issue, boolean collectAssignee) throws JSONException {
 		JSONObject json = new JSONObject();
 		json.putOpt("key", issue.getKey());
-		json.putOpt("created_at", this.dateFormat.format(issue.getCreated()));
-		json.putOpt("updated_at", this.dateFormat.format(issue.getUpdated()));
+		json.putOpt("issue_created_at", this.dateFormat.format(issue.getCreated()));
+		json.putOpt("issue_updated_at", this.dateFormat.format(issue.getUpdated()));
+//		json.putOpt("issue_created_at", issue.getCreated());
+//		json.putOpt("issue_updated_at", issue.getUpdated());
 		if (issue.getDueDate() != null) {
 			json.putOpt("due_date", this.dateFormat.format(issue.getDueDate()));
+//			json.putOpt("due_date", issue.getDueDate());
 		}		
 		json.putOpt("priority", issue.getPriorityObject().getName());
 		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
@@ -112,6 +115,7 @@ public class Transporter implements Runnable {
 		if (issue.getResolutionObject() != null) {
 			json.putOpt("resolution", issue.getResolutionObject().getName());
 			json.putOpt("resolution_date", this.dateFormat.format(issue.getResolutionDate()));
+//			json.putOpt("resolution_date", issue.getResolutionDate());
 		}
 		json.putOpt("transitions", getTransitions(issue));
 		return json;
@@ -139,7 +143,9 @@ public class Transporter implements Runnable {
 			for (GenericValue changeItem : changeItems) {
 				JSONObject json = new JSONObject();
 				json.put("entered_at", this.dateFormat.format(entered_at));
+//				json.put("entered_at", entered_at);
 				json.put("exited_at", this.dateFormat.format(changeGroup.getTimestamp("created")));
+//				json.put("exited_at", changeGroup.getTimestamp("created"));
 				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
 				json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
 				retList.add(json);
@@ -152,6 +158,7 @@ public class Transporter implements Runnable {
 		// add current state
 		JSONObject json = new JSONObject();
 		json.put("entered_at", this.dateFormat.format(entered_at));
+//		json.put("entered_at", entered_at);
 		json.put("status", issue.getStatusObject().getName());
 		retList.add(json);
 		
@@ -161,6 +168,7 @@ public class Transporter implements Runnable {
 	public boolean sendData(String slaToken, String body) {
 		HttpClient client = new HttpClient();
 		int statusCode = 0;
+		log.error("sending content "+body);
 		try {
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID)) {
 				PostMethod httpMethod = new PostMethod(Transporter.realSlaUrl + "/api/tickets/");
