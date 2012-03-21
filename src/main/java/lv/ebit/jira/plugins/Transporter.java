@@ -1,6 +1,8 @@
 package lv.ebit.jira.plugins;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +44,7 @@ public class Transporter implements Runnable {
 	private String url;
 	private Long eventTypeId;
 	private AvatarService avatarService;
-	public static String realSlaUrl = "http://orion.ebit.lv:8088";
+	public static String realSlaUrl = "https://simplesla.ebit.lv";
 //	public static String realSlaUrl = "http://172.17.1.111:4444";
 	private SimpleDateFormat dateFormat;
 
@@ -89,12 +91,14 @@ public class Transporter implements Runnable {
 		if (issue.getDueDate() != null) {
 			json.putOpt("due_date", this.dateFormat.format(issue.getDueDate()));
 //			json.putOpt("due_date", issue.getDueDate());
-		}		
+		} else {
+			json.putOpt("due_date", JSONObject.NULL);
+		}
 		json.putOpt("priority", issue.getPriorityObject().getName());
 		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
 		json.putOpt("status", issue.getStatusObject().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
-		json.putOpt("url", url + issue.getKey());
+		json.putOpt("url", url+"/browse/" + issue.getKey());
 
 		// Iterator<ProjectComponent> component =
 		// issue.getComponentObjects().iterator();
@@ -108,7 +112,8 @@ public class Transporter implements Runnable {
 			if (assignee != null) {
 				json.putOpt("assignee", assignee.getDisplayName());
 				json.putOpt("assignee_email", assignee.getEmailAddress());
-				json.putOpt("assignee_avatar_url", this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE));
+				URI jira_uri = URI.create(url);
+				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE)));
 			}
 		}
 
@@ -116,6 +121,9 @@ public class Transporter implements Runnable {
 			json.putOpt("resolution", issue.getResolutionObject().getName());
 			json.putOpt("resolution_date", this.dateFormat.format(issue.getResolutionDate()));
 //			json.putOpt("resolution_date", issue.getResolutionDate());
+		} else {
+			json.putOpt("resolution", JSONObject.NULL);
+			json.putOpt("resolution_date", JSONObject.NULL);
 		}
 		json.putOpt("transitions", getTransitions(issue));
 		return json;
@@ -168,7 +176,7 @@ public class Transporter implements Runnable {
 	public boolean sendData(String slaToken, String body) {
 		HttpClient client = new HttpClient();
 		int statusCode = 0;
-		log.error("sending content "+body);
+//		log.error("sending content "+body);
 		try {
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID)) {
 				PostMethod httpMethod = new PostMethod(Transporter.realSlaUrl + "/api/tickets/");
@@ -192,11 +200,12 @@ public class Transporter implements Runnable {
 				statusCode = client.executeMethod(httpMethod);
 			}
 		} catch (HttpException e) {
-			log.error(e.getMessage());
+			log.error("HttpException:"+e.getMessage());
+			log.error(e.getStackTrace().toString());
 		} catch (IOException e) {
-			log.error(e.getMessage());
+			log.error("IOException"+e.getMessage());
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Exception"+e.getMessage());
 		}
 		if (statusCode != 200) {
 			log.error("statusCode was " + statusCode);

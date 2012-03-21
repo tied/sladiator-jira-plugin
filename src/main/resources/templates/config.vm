@@ -132,6 +132,8 @@
                 <a href="$issue_url$error">$error</a>
                #end
             #end
+            <br />
+            <input type="button" class="spaced row-cancel" id="clearErrors" value="Clear Issues from error list">
           #end
         </td>
       </tr>

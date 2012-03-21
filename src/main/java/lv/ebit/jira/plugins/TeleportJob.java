@@ -57,7 +57,7 @@ public class TeleportJob {
 			List<Issue> issues = results.getIssues();
 			for (Issue issue : issues) {
 				log.error("Found {} issue", issue.getKey());
-				String url = applicationProperties.getBaseUrl()+"/browse/";
+				String url = applicationProperties.getBaseUrl();
 				Runnable transport = new Transporter(url,this.configuration,issue, EventType.ISSUE_CREATED_ID, this.avatarService);
 				transport.run();
 			}

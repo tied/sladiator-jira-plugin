@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -18,12 +19,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import lv.ebit.jira.plugins.ConfigModel.Configuration;
+
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.sal.api.ApplicationProperties;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.crowd.embedded.api.User;
+import com.google.common.base.Joiner;
 import com.opensymphony.user.EntityNotFoundException;
 
 @Path("/teleport/")
@@ -84,7 +89,15 @@ public class TeleportResource {
 		}
 
 	}
-
+	
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response delete(@Context HttpServletRequest request) {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(Configuration.KEY);
+		pluginSettings.remove("errors");
+		return Response.ok().build();
+	}
+	
 	private boolean isAuthorized(HttpServletRequest request) {
 		String username = userManager.getRemoteUsername(request);
 		if (username == null || username != null && !userManager.isSystemAdmin(username)) {

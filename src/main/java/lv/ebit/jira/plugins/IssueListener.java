@@ -36,7 +36,7 @@ public class IssueListener implements InitializingBean, DisposableBean {
 		Configuration configuration = new Configuration(pluginSettings.get("configuration"));
 		
 		if (this.validEventsList.contains(eventTypeId)) {
-			String url = applicationProperties.getBaseUrl()+"/browse/";
+			String url = applicationProperties.getBaseUrl();
 			Runnable transport = new Transporter(url,configuration,issue, eventTypeId, this.avatarService);
 			new Thread(transport).start();
 		}

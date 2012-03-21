@@ -1,6 +1,20 @@
 AJS.toInit(function() {
   var baseUrl = AJS.$("meta[name='application-base-url']").attr("content");
-
+  
+  function clearErrors() {
+    AJS.$.ajax({
+      url : baseUrl + "/rest/realsla-teleport/1.0/teleport/",
+      type : "DELETE",
+      contentType : "application/json",
+      beforeSend : function(jqXHR, settings) {
+        AJS.$("#freezer").show();
+      },
+      success : function(data, textStatus) {
+        jQuery.fn.isDirty = function () {return false;}
+        window.location.reload();
+      }
+    });
+  }
   function teleport() {
     AJS.$.ajax({
       url : baseUrl + "/rest/realsla-teleport/1.0/teleport/",
@@ -146,4 +160,8 @@ AJS.toInit(function() {
     teleport();
   });
 
+  AJS.$("#clearErrors").click(function(e) {
+    e.preventDefault();
+    clearErrors();
+  });
 });
