@@ -1,0 +1,29 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}"
+	name="${project.name}" plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+	</plugin-info>
+  
+  <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
+  
+	<project-tabpanel key="panel" name="SLAdiator Project Tab"
+		class="lv.ebit.jira.plugins.SladiatorProjectTab">
+		<description>
+			Adds SLAdiator configuration page for project.
+		</description>
+		<label key="SLAdiator" />
+		<order>50</order>
+		<resource type="velocity" name="config" location="templates/config.vm" />
+	</project-tabpanel>
+  
+  <web-resource name="SLAdiator assets" key="assets"> 
+      <dependency>com.atlassian.auiplugin:ajs</dependency> 
+      <resource type="download" name="sladiator.js" location="javascripts/sladiator.js"/>
+      <resource type="download" name="sladiator.css" location="stylesheets/sladiator.css"/>
+  </web-resource>
+  
+  <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"
+context-key="applicationProperties" name="JIRA Context Item"/>
+</atlassian-plugin>

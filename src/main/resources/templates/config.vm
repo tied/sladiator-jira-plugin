@@ -1,0 +1,113 @@
+$webResourceManager.requireResource("jira.webresources:calendar")
+$webResourceManager.requireResource("jira.webresources:calendar-en")
+$webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
+<div class="column full" id="primary">
+	<div class="content">
+		<p>SLAdiator is monitoring your ticket workflow, calculates spent
+			time according your Service Level Agreement and warns you before SLA
+			breach!</p>
+		#if ( $isProjectAdmin )
+		  <input type="hidden" id="baseURL" value="$baseURL"/>
+      <div class="module">
+	      <div class="mod-header">
+	        <h3>SLAdiator configuration</h3>
+	      </div>
+	      <div class="mod-content">
+	        <form class="aui" action="#" method="post" id="sladiator-project">
+	          <div class="warningBox" style="display:none">Connection to SLAdiator.com was not successfull. Please check that all tokens are copied properly</div>
+	          <div class="infoBox" style="display:none">Connection to SLAdiator.com was successfull</div>
+	          <fieldset>
+	            <div class="field-group">
+	              <label for="sla_token">SLA token
+	                <span class="aui-icon icon-required"></span>
+	                <span class="content">required</span>
+	              </label>
+	              <input class="text long-field" maxlength="50" name="sla_token" type="text" id="sla_token" />
+	              <div class="description">Copy SLA token given in SLAdiator.com configuration page.</div>
+	            </div>
+	            <div class="field-group">
+	              <label for="security_token">Security token
+	                <span class="aui-icon icon-required"></span>
+	                <span class="content">required</span>
+	              </label>
+	              <input class="text long-field" maxlength="50" name="security_token" type="text" id="security_token" />
+	              <div class="description">Copy Security token given in SLAdiator.com configuration page.</div>
+	            </div>
+	            <div class="field-group">
+	              <label for="sladiator_url">Sladiator URL</label> 
+	              <input class="text " maxlength="150" name="sladiator_url" type="text" id="sladiator_url" value="https://sladiator.com"/>
+	              <div class="description">Change only if You are not using standard SLAdiator.com service.</div>
+	            </div>
+	          </fieldset>
+	          <div class="buttons-container content-footer">
+	            <div class="buttons">
+	               <input type="submit" name="save" id="saveSLA" value="Save" accesskey="s" class="button spaced " />
+	               <input type="button" name="test" id="testSLA" value="Test connection" class="button spaced " />
+	               <input type="button" name="visit" value="Visit SLA configuration in SLAdiator" class="button spaced " />
+	            </div>
+	          </div>
+	        </form>
+	      </div>
+	    </div>
+	    <div class="module" style="display:none;">
+	      <div class="mod-header">
+	        <h3>Tickets not sent</h3>
+	      </div>
+	      <div class="mod-content">
+	        <div class="noteBox" style="display:none">
+	          <p>JIRA was not able to send follownig tickets.</p>
+	          <p>You can try to send these tickets again by pressing "Send again".</p>
+	          <p>If error lists still indicates problems with some tickets, the reasons could be:</p>
+	          <ul>
+	            <li>JIRA can not reach SLAdiator - please check it by pressing "Test connection" above</li>
+	            <li>SLAdiator.com is down for maintenance - please check that <a href="https://sladiator.com">sladiator.com</a> is reachable</li>
+	          </ul>
+	        </div>
+	        <a>Viens</a>, <a>Divi</a>
+	        <div class="buttons-container content-footer">
+	          <div class="buttons">
+	            <input type="submit" name="save" value="Send again" class="button spaced" />
+	           </div>
+	        </div>
+	      </div>
+	    </div>
+	    <div class="module">
+	      <div class="mod-header">
+	        <h3>Send old issues to SLAdiator</h3>
+	      </div>
+	      <div class="mod-content">
+	        <form class="aui" action="#" method="post">
+	          <div class="warningBox" style="display:none">Invalid date format, please use calnedar to select a date</div>
+	          <div class="infoBox" style="display:none">123 issues successfully sent to SLAdiator.com</div>
+	          <div class="field-group">
+	            <label for="teleport_date_from">Starting from</label> 
+	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="date_from" />
+	            <a href="#" id="date_from-trigger" title="Select a date">
+	              <span class="aui-icon icon-date">Select a date</span>
+	            </a>
+	            <div class="description">Date from which tickets needs to be sent to SLAdiator.</div>
+	            <script type="text/javascript">
+	                Calendar.setup({
+	                  firstDay : 0,
+	                  inputField : 'date_from',
+	                  button : 'date_from-trigger',
+	                  align : 'Br',
+	                  singleClick : true,
+	                  useISO8601WeekNumbers : false,
+	                  ifFormat : '%e/%m/%Y'
+	                });
+	              </script>
+	          </div>
+	          <div class="buttons-container content-footer">
+	            <div class="buttons">
+	              <input type="submit" name="save" value="Send" class="button spaced">
+	             </div>
+	          </div>
+	        </form>
+	      </div>
+	    </div>
+	  #else
+	   TODO
+		#end
+	</div>
+</div>
