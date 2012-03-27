@@ -13,7 +13,7 @@
 		<url>http://ebit.lv/</url>
 	</organization>
 
-	<name>Jira plugin for RealSLA</name>
+	<name>Jira plugin for SLAdiator</name>
 	<description>This is the lv.ebit.jira.plugins:realsla plugin for Atlassian JIRA.</description>
 	<packaging>atlassian-plugin</packaging>
 

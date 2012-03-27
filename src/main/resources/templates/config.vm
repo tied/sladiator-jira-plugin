@@ -16,9 +16,12 @@
       </tr>
       <tr>
         <td class="instructions">
-          <p>Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum </p> 
-          <div class="infoBox">Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.. </div> 
-          <p>Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum </p>
+          <p>The JIRA SLAdiator plugin allows you to send JIRA ticket data to SLAdiator in <strong>secure</strong> way:</p>
+          <ul>
+            <li>Plugin sends only ticket ID and status transition history.</li>
+            <li>Plugin doesn’t send ticket summary, description, client information, attachments, comments or other information which might be sensitive.</li>
+          </ul> 
+          <p>SLAdiator is monitoring your ticket workflow, calculates spent time according your Service Level Agreement and warns you before SLA breach.</p>
         </td>
       </tr>
       <tr>
@@ -169,7 +172,7 @@
                 #end
               </select>
              </div>
-            <input type="submit" name="save" value="Send to RealSLA" class="button spaced">
+            <input type="submit" name="save" value="Send to SLAdiator" class="button spaced">
           </form>
           <div class="aui-blanket" id="freezer" style="display: none;"></div>
         </td>

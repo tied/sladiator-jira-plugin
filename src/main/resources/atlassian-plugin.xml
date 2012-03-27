@@ -18,34 +18,34 @@
   <component-import key="searchProvider" interface="com.atlassian.jira.issue.search.SearchProvider" />
     
 	<rest key="rest" path="/realsla-config" version="1.0">
-    	<description>Provides REST resources for the RealSLA config UI.</description>
+    	<description>Provides REST resources for the SLAdiator config UI.</description>
 	</rest>
 	<rest key="teleport" path="/realsla-teleport" version="1.0">
-      <description>Provides Teleport for the RealSLA.</description>
+      <description>Provides Teleport for the SLAdiator.</description>
   </rest>
 
-	<web-item key="jira-menu-item" name="RealSLA Config" section="system.admin/globalsettings" weight="10" application="jira">
-    	<description>Link to RealSAL config page.</description> 
+	<web-item key="jira-menu-item" name="SLAdiator Config" section="system.admin/globalsettings" weight="10" application="jira">
+    	<description>Link to SLAdiator config page.</description> 
     	<label key="realsla.config.title" /> 
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
-	<web-item key="fe-menu-item" name="RealSLA Config" section="system.admin/global" weight="10" application="fisheye">
-    	<description>Link to RealSAL config page.</description> 
+	<web-item key="fe-menu-item" name="SLAdiator Config" section="system.admin/global" weight="10" application="fisheye">
+    	<description>Link to SLAdiator config page.</description> 
     	<label key="realsla.config.title" /> 
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
-	<web-item key="bamboo-menu-item" name="RealSLA Config" section="system.admin/plugins" weight="10" application="bamboo">
-    	<description>Link to RealSAL config page.</description> 
+	<web-item key="bamboo-menu-item" name="SLAdiator Config" section="system.admin/plugins" weight="10" application="bamboo">
+    	<description>Link to SLAdiator config page.</description> 
     	<label key="realsla.config.title" /> 
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
-	<web-item key="conf-menu-item" name="RealSLA Config" section="system.admin/configuration" weight="10">
-    	<description>Link to RealSAL config page.</description> 
+	<web-item key="conf-menu-item" name="SLAdiator Config" section="system.admin/configuration" weight="10">
+    	<description>Link to SLAdiator config page.</description> 
     	<label key="realsla.config.title" /> 
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
-	<web-item key="refapp-menu-item" name="RealSLA Config" section="system.admin/general" weight="10" application="refapp"> 
-    	<description>Link to RealSAL config page.</description> 
+	<web-item key="refapp-menu-item" name="SLAdiator Config" section="system.admin/general" weight="10" application="refapp"> 
+    	<description>Link to SLAdiator config page.</description> 
     	<label key="realsla.config.title" /> 
     	<link linkId="realsla-config-link">/plugins/servlet/realsla/config</link> 
 	</web-item>
@@ -56,7 +56,7 @@
 	
 	<servlet key="config-servlet" class="lv.ebit.jira.plugins.ConfigServlet" value="enabled">
     	<url-pattern>/realsla/config</url-pattern>
-    	<description>RealSLA configuration GUI</description>
+    	<description>SLAdiator configuration GUI</description>
 	</servlet>
 	
 	<resource type="i18n" name="i18n" location="lv.ebit.jira.plugins.i18n" />
