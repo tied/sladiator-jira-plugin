@@ -7,6 +7,12 @@
 	</plugin-info>
   
   <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
+  <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
+  <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
+  <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" />
+  <component-import key="avatarService" interface="com.atlassian.jira.avatar.AvatarService" />
+  <component-import key="searchProvider" interface="com.atlassian.jira.issue.search.SearchProvider" />
+  <component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
   
 	<project-tabpanel key="panel" name="SLAdiator Project Tab"
 		class="lv.ebit.jira.plugins.SladiatorProjectTab">
@@ -17,6 +23,14 @@
 		<order>50</order>
 		<resource type="velocity" name="config" location="templates/config.vm" />
 	</project-tabpanel>
+  
+  <component key="issue-listener" class="lv.ebit.jira.plugins.SladiatorIssueListener">
+    <description>Monitor the incoming JIRA issue events.</description>
+  </component>
+  
+  <rest key="rest" path="/sladiator" version="1.0">
+      <description>Provides REST resources for the SLAdiator configuration</description>
+  </rest>
   
   <web-resource name="SLAdiator assets" key="assets"> 
       <dependency>com.atlassian.auiplugin:ajs</dependency> 

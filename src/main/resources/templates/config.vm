@@ -6,44 +6,37 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 		<p>SLAdiator is monitoring your ticket workflow, calculates spent
 			time according your Service Level Agreement and warns you before SLA
 			breach!</p>
-		#if ( $isProjectAdmin )
+		#if ( $isProjectLead )
 		  <input type="hidden" id="baseURL" value="$baseURL"/>
+		  <input type="hidden" id="projectId" value="$projectId"/>
       <div class="module">
 	      <div class="mod-header">
 	        <h3>SLAdiator configuration</h3>
 	      </div>
 	      <div class="mod-content">
 	        <form class="aui" action="#" method="post" id="sladiator-project">
-	          <div class="warningBox" style="display:none">Connection to SLAdiator.com was not successfull. Please check that all tokens are copied properly</div>
-	          <div class="infoBox" style="display:none">Connection to SLAdiator.com was successfull</div>
+	          <input type="hidden" name="project" value="$projectId"/>
+	          <div class="warningBox" style="display:none;"></div>
+	          <div class="infoBox" style="display:none;"></div>
 	          <fieldset>
 	            <div class="field-group">
 	              <label for="sla_token">SLA token
 	                <span class="aui-icon icon-required"></span>
 	                <span class="content">required</span>
 	              </label>
-	              <input class="text long-field" maxlength="50" name="sla_token" type="text" id="sla_token" />
+	              <input class="text long-field" maxlength="50" name="sla_token" type="text" id="sla_token" value="$sla.getSlaToken()" />
 	              <div class="description">Copy SLA token given in SLAdiator.com configuration page.</div>
 	            </div>
 	            <div class="field-group">
-	              <label for="security_token">Security token
-	                <span class="aui-icon icon-required"></span>
-	                <span class="content">required</span>
-	              </label>
-	              <input class="text long-field" maxlength="50" name="security_token" type="text" id="security_token" />
-	              <div class="description">Copy Security token given in SLAdiator.com configuration page.</div>
-	            </div>
-	            <div class="field-group">
-	              <label for="sladiator_url">Sladiator URL</label> 
-	              <input class="text " maxlength="150" name="sladiator_url" type="text" id="sladiator_url" value="https://sladiator.com"/>
-	              <div class="description">Change only if You are not using standard SLAdiator.com service.</div>
-	            </div>
+                 <label for="send_assignee">Include assignee?</label>
+                 <input class="checkbox " name="send_assignee" type="checkbox" value="1" id="send_assignee" $sla.checkedSendAssignee()>
+              </div>
 	          </fieldset>
 	          <div class="buttons-container content-footer">
 	            <div class="buttons">
 	               <input type="submit" name="save" id="saveSLA" value="Save" accesskey="s" class="button spaced " />
 	               <input type="button" name="test" id="testSLA" value="Test connection" class="button spaced " />
-	               <input type="button" name="visit" value="Visit SLA configuration in SLAdiator" class="button spaced " />
+	               <input type="button" name="visit" id="visitSLA" value="Visit SLA configuration in SLAdiator" class="button spaced " />
 	            </div>
 	          </div>
 	        </form>
@@ -66,7 +59,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	        <a>Viens</a>, <a>Divi</a>
 	        <div class="buttons-container content-footer">
 	          <div class="buttons">
-	            <input type="submit" name="save" value="Send again" class="button spaced" />
+	            <input type="submit" name="save" id="janitorSLA" value="Send again" class="button spaced" />
 	           </div>
 	        </div>
 	      </div>
@@ -76,9 +69,10 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	        <h3>Send old issues to SLAdiator</h3>
 	      </div>
 	      <div class="mod-content">
-	        <form class="aui" action="#" method="post">
-	          <div class="warningBox" style="display:none">Invalid date format, please use calnedar to select a date</div>
-	          <div class="infoBox" style="display:none">123 issues successfully sent to SLAdiator.com</div>
+	        <form class="aui" action="#" method="post" id="sladiator-teleprot">
+	          <input type="hidden" name="project" value="$projectId"/>
+	          <div class="warningBox" style="display:none;"></div>
+	          <div class="infoBox" style="display:none;"></div>
 	          <div class="field-group">
 	            <label for="teleport_date_from">Starting from</label> 
 	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="date_from" />
@@ -100,14 +94,19 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	          </div>
 	          <div class="buttons-container content-footer">
 	            <div class="buttons">
-	              <input type="submit" name="save" value="Send" class="button spaced">
+	              <input type="submit" name="save" id="teleportSLA" value="Send" class="button spaced">
 	             </div>
 	          </div>
 	        </form>
 	      </div>
 	    </div>
 	  #else
-	   TODO
+	   #if ($sla.getSlaToken().isEmpty())
+	     <div class="infoBox" style="">This project is not yet configured to use SLAdiator. <a href="https://simplesla.ebit.lv/" target="_blank">Visit SLAdiator and try it out.</a></div>
+	   #else
+	     <div class="infoBox" style="">This project is configured to use SLAdiator. <a href="https://simplesla.ebit.lv/sla_token/$sla.getSlaToken()" target="_blank">Visit SLAdiator for your project.</a></div>
+	   #end
 		#end
 	</div>
+	<div class="aui-blanket" id="freezer" style="display: none;"></div>
 </div>
