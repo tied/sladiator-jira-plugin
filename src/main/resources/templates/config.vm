@@ -8,7 +8,6 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 			breach!</p>
 		#if ( $isProjectLead )
 		  <input type="hidden" id="baseURL" value="$baseURL"/>
-		  <input type="hidden" id="projectId" value="$projectId"/>
       <div class="module">
 	      <div class="mod-header">
 	        <h3>SLAdiator configuration</h3>
@@ -42,28 +41,38 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	        </form>
 	      </div>
 	    </div>
-	    <div class="module" style="display:none;">
-	      <div class="mod-header">
-	        <h3>Tickets not sent</h3>
-	      </div>
-	      <div class="mod-content">
-	        <div class="noteBox" style="display:none">
-	          <p>JIRA was not able to send follownig tickets.</p>
-	          <p>You can try to send these tickets again by pressing "Send again".</p>
-	          <p>If error lists still indicates problems with some tickets, the reasons could be:</p>
-	          <ul>
-	            <li>JIRA can not reach SLAdiator - please check it by pressing "Test connection" above</li>
-	            <li>SLAdiator.com is down for maintenance - please check that <a href="https://sladiator.com">sladiator.com</a> is reachable</li>
-	          </ul>
-	        </div>
-	        <a>Viens</a>, <a>Divi</a>
-	        <div class="buttons-container content-footer">
-	          <div class="buttons">
-	            <input type="submit" name="save" id="janitorSLA" value="Send again" class="button spaced" />
-	           </div>
-	        </div>
-	      </div>
-	    </div>
+	    #if (!$errors.isEmpty())
+		    <div class="module">
+		      <div class="mod-header">
+		        <h3>Tickets not sent</h3>
+		      </div>
+		      <div class="mod-content">
+		        <form class="aui" action="#" method="post" id="sladiator-janitor">
+            <input type="hidden" name="project" value="$projectId"/>
+			        <div class="warningBox" style="display:none;"></div>
+			        <div class="noteBox">
+			          <p>JIRA was not able to send following tickets.</p>
+			          <p>You can try to send these tickets again by pressing "Send again".</p>
+			          <p>If error lists still indicates problems with some tickets, the reasons could be:</p>
+			          <ul>
+			            <li>JIRA can not reach SLAdiator - please check it by pressing "Test connection" above</li>
+			            <li>SLAdiator.com is down for maintenance - please check that <a href="https://sladiator.com">sladiator.com</a> is reachable</li>
+			          </ul>
+			        </div>
+			        #foreach ($error in $errors)
+	              #if (!$error.isEmpty()) 
+	                <a href="$issue_url$error">$error</a>
+	               #end
+	            #end
+				        <div class="buttons-container content-footer">
+				          <div class="buttons">
+				            <input type="submit" name="save" id="janitorSLA" value="Send again" class="button spaced" />
+				           </div>
+				        </div>
+				    </form>
+		      </div>
+		    </div>
+		   #end
 	    <div class="module">
 	      <div class="mod-header">
 	        <h3>Send old issues to SLAdiator</h3>
@@ -100,6 +109,19 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	        </form>
 	      </div>
 	    </div>
+	    <div class="module">
+        <div class="mod-header">
+          <h3>Delete SLAdiator configuration</h3>
+        </div>
+        <form class="aui" action="#" method="post" id="sladiator-delete">
+          <input type="hidden" name="project" value="$projectId"/>
+          <div class="buttons-container content-footer">
+            <div class="buttons">
+              <input type="submit" name="save" id="deleteSLA" value="Delete my configuration" class="button spaced">
+            </div>
+          </div>
+        </form>
+      </div>
 	  #else
 	   #if ($sla.getSlaToken().isEmpty())
 	     <div class="infoBox" style="">This project is not yet configured to use SLAdiator. <a href="https://simplesla.ebit.lv/" target="_blank">Visit SLAdiator and try it out.</a></div>

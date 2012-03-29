@@ -59,14 +59,14 @@ public class SladiatorTransport implements Runnable {
 	}
 	@Override
 	public void run() {
-		SladiatorIssueListener.removeFailedIssue(issue.getKey());
+		SladiatorIssueListener.removeFailedIssue(issue.getProjectObject().getId().toString(),issue.getKey());
 		JSONObject json;
 		try {
 			json = collectIssueInfo(issue, this.config.isSendAssignee());
 			if (sendData(json.toString())) {
 				log.info("Issue {} was sent", issue.getKey());
 			} else {
-				SladiatorIssueListener.addFailedIssue(issue.getKey());
+				SladiatorIssueListener.addFailedIssue(issue.getProjectObject().getId().toString(),issue.getKey());
 				log.error("Issue {} was not sent", issue.getKey());
 			}
 		} catch (JSONException e) {

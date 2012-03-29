@@ -2,6 +2,7 @@ package lv.ebit.jira.plugins;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +22,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.jira.avatar.AvatarService;
+import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.project.DefaultProjectManager;
 import com.atlassian.jira.project.Project;
 
@@ -35,12 +39,18 @@ public class SladiatorRestResource {
 	public static final Logger log = LoggerFactory.getLogger(SladiatorRestResource.class);
 	private final PluginSettingsFactory pluginSettingsFactory;
 	private final TransactionTemplate transactionTemplate;
+	private final AvatarService avatarService;
+	private final SearchProvider searchProvider;
 	private final UserManager userManager;
+	private final String jiraUrl;
 	
-	public SladiatorRestResource(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, UserManager userManager) {
+	public SladiatorRestResource(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, UserManager userManager, ApplicationProperties applicationProperties, AvatarService avatarService, SearchProvider searchProvider) {
 		this.pluginSettingsFactory = pluginSettingsFactory;
 		this.transactionTemplate = transactionTemplate;
 		this.userManager = userManager;
+		this.jiraUrl = applicationProperties.getBaseUrl();
+		this.avatarService = avatarService;
+		this.searchProvider = searchProvider;
 	}
 	
 	@Path("/config")
@@ -54,7 +64,7 @@ public class SladiatorRestResource {
 			public Object doInTransaction() {
 				if (config.isValid()) {
 					PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
-					pluginSettings.put(config.getProject().toString(),config.toString());
+					pluginSettings.put(config.getProject(),config.toString());
 					return true;
 				} else {
 					return false;
@@ -78,7 +88,8 @@ public class SladiatorRestResource {
 		transactionTemplate.execute(new TransactionCallback() {
 			public Object doInTransaction() {
 				PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
-				pluginSettings.remove(config.getProject().toString());
+				pluginSettings.remove(config.getProject());
+				pluginSettings.get("errors"+config.getProject());
 				return true;
 			}
 		});
@@ -116,20 +127,30 @@ public class SladiatorRestResource {
 		}
 		String errors = "";
 		if (teleport.date_from.isEmpty()) {
-			errors = "Starting from date is required";
+			errors = "Starting from date is required.";
 		}
 		if (teleport.project.isEmpty()) {
-			errors = "Project is required";
+			errors = errors + " Project is required.";
+		}
+		Date date_from = null;
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			date_from = formatter.parse(teleport.date_from);
+		} catch (ParseException e) {
+			errors = errors+ " Invalid date format.";
+		}
+		SladiatorConfigModel config = getSladiatorConfig(teleport.project);
+		SladiatorTransport connection = new SladiatorTransport(config);
+		String status = connection.checkConnection();
+		
+		if (!status.isEmpty()) {
+			errors = errors + " "+status;
 		}
 		if (errors.isEmpty()) {
-			Date date_from = null;
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-			try {
-				date_from = formatter.parse(teleport.date_from);
-			} catch (ParseException e) {
-				errors = "Invalid date format.";
-			}
-			return Response.ok("XXX tickets sent to SLAdiator").build();
+			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
+			job.run();
+			String success = job.getTotalProcessed() + " issues sent to RealSLA";
+			return Response.ok(success).build();
 		} else {
 			return Response.serverError().entity(errors).build();
 		}
@@ -151,7 +172,21 @@ public class SladiatorRestResource {
 		if (!isAuthorized(request, janitor.project)) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		return Response.ok().build();
+		
+		SladiatorConfigModel config = getSladiatorConfig(janitor.project);
+		SladiatorTransport connection = new SladiatorTransport(config);
+		String status = connection.checkConnection();
+		
+		if (status.isEmpty()) {
+			
+			ArrayList<String> keys = SladiatorIssueListener.getFailedIssues(janitor.project);
+			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLeadUser());
+			job.run();
+			return Response.ok().build();
+		} else {
+			return Response.serverError().entity(status).build();
+			
+		}
 		
 	}
 	
@@ -169,5 +204,10 @@ public class SladiatorRestResource {
 			return false;
 		}
 		return true;
+	}
+	
+	private SladiatorConfigModel getSladiatorConfig(String project) {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
+		return new SladiatorConfigModel(pluginSettings.get(project));
 	}
 }

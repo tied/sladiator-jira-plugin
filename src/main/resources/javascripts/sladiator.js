@@ -81,23 +81,35 @@ AJS.toInit(function() {
       url : baseUrl + "/rest/sladiator/1.0/janitor",
       type : "POST",
       contentType : "application/json",
-      data : formToJSON("#sladiator-project"),
+      data : formToJSON("#sladiator-janitor"),
       beforeSend : function(jqXHR, settings) {
         AJS.$("#freezer").show();
       },
       success : function(data, textStatus) {
         AJS.$("#freezer").hide();
-        AJS.$("#sladiator-teleprot .warningBox").hide();
-        AJS.$("#sladiator-teleprot .infoBox").html(data).show();
+        window.location.reload();
       },
       error : function(jqXHR, textStatus, errorThrown) {
         AJS.$("#freezer").hide();
-        AJS.$("#sladiator-teleprot .infoBox").hide();
-        AJS.$("#sladiator-teleprot .warningBox").html(jqXHR.responseText).show();
+        AJS.$("#sladiator-janitor .warningBox").html(jqXHR.responseText).show();
       }
     });
   }
-  
+  function deleteSLA() {
+    jQuery.fn.isDirty = function () {return false;}
+    var answer = confirm("Please confirm that you wish to delete SLAdiator configuration for your project!");
+    if (answer) {
+      AJS.$.ajax({
+        url : baseUrl + "/rest/sladiator/1.0/config",
+        type : "DELETE",
+        contentType : "application/json",
+        data : formToJSON("#sladiator-delete"),
+        success : function(data, textStatus) {
+          window.location.reload();
+        }
+      });
+    }
+  }
   AJS.$("#saveSLA").click(function(e) {
     e.preventDefault();
     maintainSLA();
@@ -118,5 +130,9 @@ AJS.toInit(function() {
   AJS.$("#janitorSLA").click(function(e) {
     e.preventDefault();
     janitorSLA();
+  });
+  AJS.$("#deleteSLA").click(function(e) {
+    e.preventDefault();
+    deleteSLA();
   });
 });

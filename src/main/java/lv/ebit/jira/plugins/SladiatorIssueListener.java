@@ -29,7 +29,6 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	public void onIssueEvent(IssueEvent issueEvent) {
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
-		SladiatorTransport.log.error("Issue listener");
 		if (this.validEventsList.contains(eventTypeId)) {
 			PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 			SladiatorConfigModel configuration = new SladiatorConfigModel(pluginSettings.get(issue.getProjectObject().getId().toString()));
@@ -39,30 +38,34 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 			}
 		}
 	}
-	public static void addFailedIssue(String key) {
+	public static void addFailedIssue(String project, String key) {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		synchronized(pluginSettings) {
 			List<String> errors = new ArrayList<String>(); 
-	        if (pluginSettings.get("errors") != null) {
-	        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors").toString().split(",")));
+	        if (pluginSettings.get("errors"+project) != null) {
+	        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors"+project).toString().split(",")));
 	        	errors.remove("");
 	        }
 	        errors.remove(key);
 	        errors.add(key);
-			pluginSettings.put("errors",Joiner.on(",").skipNulls().join(errors));
+			pluginSettings.put("errors"+project,Joiner.on(",").skipNulls().join(errors));
 		}
 	}
-	public static void removeFailedIssue(String key) {
+	public static void removeFailedIssue(String project, String key) {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		synchronized(pluginSettings) {
 			List<String> errors = new ArrayList<String>(); 
-	        if (pluginSettings.get("errors") != null) {
-	        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors").toString().split(",")));
+	        if (pluginSettings.get("errors"+project) != null) {
+	        	errors = new ArrayList<String>(Arrays.asList(pluginSettings.get("errors"+project).toString().split(",")));
 	        	errors.remove("");
 	        }
 			errors.remove(key);
-			pluginSettings.put("errors",Joiner.on(",").skipNulls().join(errors));
+			pluginSettings.put("errors"+project,Joiner.on(",").skipNulls().join(errors));
 		}
+	}
+	public static ArrayList<String> getFailedIssues(String project) {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
+		return new ArrayList<String>(Arrays.asList(pluginSettings.get("errors"+project).toString().split(",")));
 	}
 	/**
 	 * Constructor.

@@ -1,7 +1,8 @@
 package lv.ebit.jira.plugins;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
+
 
 import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.avatar.AvatarService;
@@ -14,29 +15,28 @@ import com.atlassian.jira.jql.builder.JqlQueryBuilder;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
-public class SladiatorTeleport {
+public class SladiatorJanitor {
 	private final SearchProvider searchProvider;
 	private final AvatarService avatarService;
 	private SladiatorConfigModel config;
 	private String jiraUrl;
-	private Long total;
 	private User user;
-	private Date dateFrom;
+	private ArrayList<String> keys;
 	
-	public SladiatorTeleport(SladiatorConfigModel config, String jiraUrl, Date dateFrom, SearchProvider searchProvider, AvatarService avatarService, User user) {
+	public SladiatorJanitor(SladiatorConfigModel config, String jiraUrl, ArrayList<String> keys, SearchProvider searchProvider, AvatarService avatarService, User user){
 		this.config = config;
-		this.dateFrom = dateFrom;
 		this.jiraUrl = jiraUrl;
 		this.searchProvider = searchProvider;
 		this.avatarService = avatarService;
 		this.user = user;
+		this.keys = keys;
 	}
-	
 	public void run() {
+		JqlQueryBuilder queryBuilder = JqlQueryBuilder.newBuilder();
+		Query query = queryBuilder.where().project().eq(this.config.getProject()).and().issue().inStrings(this.keys).buildQuery();
+//		SladiatorTransport.log.error("query "+query.getWhereClause());
 		try {
-			JqlQueryBuilder queryBuilder = JqlQueryBuilder.newBuilder();
-			Query query = queryBuilder.where().createdAfter(dateFrom).and().project().eq(this.config.getProject()).buildQuery();
-			this.total = searchProvider.searchCount(query, user);
+//			SladiatorTransport.log.error("query returned "+this.searchProvider.searchCount(query, user));
 			PagerFilter<Object> pager = new PagerFilter<Object>(10000);
 			SearchResults results = searchProvider.search(query, user, pager);
 			List<Issue> issues = results.getIssues();
@@ -45,11 +45,7 @@ public class SladiatorTeleport {
 				transport.run();
 			}
 		} catch (SearchException e) {
-			e.printStackTrace();
+			SladiatorTransport.log.error("SearchException :"+e.getMessage());
 		}
-	}
-	
-	public Long getTotalProcessed() {
-		return this.total;
 	}
 }
