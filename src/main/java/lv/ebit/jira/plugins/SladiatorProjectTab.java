@@ -17,19 +17,20 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 public class SladiatorProjectTab extends AbstractProjectTabPanel {
 	private final ApplicationProperties applicationProperties;
 	private final PluginSettingsFactory pluginSettingsFactory;
+	private boolean isProjectLead;
+	private Project project;
 	
 	public SladiatorProjectTab(ApplicationProperties applicationProperties, PluginSettingsFactory pluginSettingsFactory) {
         this.applicationProperties = applicationProperties;
         this.pluginSettingsFactory = pluginSettingsFactory;
     }
 	
-	@SuppressWarnings("deprecation")
 	public String getHtml(BrowseContext ctx) {
-		Map<String, Object> velocityParams = new HashMap<String, Object>();
-		Project project = ctx.getProject();
 		
-		velocityParams.put("isProjectLead", (project.getLeadUser().getName() == ctx.getUser().getName()));
+		Map<String, Object> velocityParams = new HashMap<String, Object>();
+		velocityParams.put("isProjectLead", this.isProjectLead);
         velocityParams.put("baseURL", applicationProperties.getBaseUrl());
+        velocityParams.put("serviceURL", SladiatorIssueListener.getServiceUrl());
         
         velocityParams.put("projectId", project.getId());
         PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
@@ -45,9 +46,12 @@ public class SladiatorProjectTab extends AbstractProjectTabPanel {
 		return descriptor.getHtml("config", velocityParams);
 		
 	}
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean showPanel(BrowseContext browseContext) {
-		return true;
+		this.project = browseContext.getProject();
+		this.isProjectLead = (project.getLeadUser().getName() == browseContext.getUser().getName());
+		return this.isProjectLead;
 	}
 
 }

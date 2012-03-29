@@ -8,6 +8,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 			breach!</p>
 		#if ( $isProjectLead )
 		  <input type="hidden" id="baseURL" value="$baseURL"/>
+		  <input type="hidden" id="serviceURL" value="$serviceURL"/>
       <div class="module">
 	      <div class="mod-header">
 	        <h3>SLAdiator configuration</h3>

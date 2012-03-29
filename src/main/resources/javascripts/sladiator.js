@@ -1,5 +1,6 @@
 AJS.toInit(function() {
   var baseUrl = AJS.$("#baseURL").val();
+  var serviceUrl = AJS.$("#serviceUrl").val();
 
   function formToJSON(form)
   {
@@ -27,7 +28,7 @@ AJS.toInit(function() {
   function testSLA() {
     jQuery.fn.isDirty = function () {return false;}
     AJS.$.ajax({
-      url : baseUrl + "/rest/sladiator/1.0/connection",
+      url : baseUrl + "/rest/sladiator/1.0/ping",
       type : "POST",
       contentType : "application/json",
       data : formToJSON("#sladiator-project"),
@@ -49,10 +50,10 @@ AJS.toInit(function() {
   function visitSLA() {
     token = AJS.$("#sla_token").val();
     if ( token != "") {
-      window.open("https://simplesla.ebit.lv/sla_token/"+ token);
+      window.open(serviceUrl+"/sla_token/"+ token);
     }
-    
   }
+  
   function teleportSLA() {
     jQuery.fn.isDirty = function () {return false;}
     AJS.$.ajax({

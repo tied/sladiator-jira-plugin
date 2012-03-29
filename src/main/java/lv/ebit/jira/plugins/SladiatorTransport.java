@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.DeleteMethod;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
@@ -35,11 +36,10 @@ import com.atlassian.jira.util.json.JSONObject;
 
 public class SladiatorTransport implements Runnable {
 	public static final Logger log = LoggerFactory.getLogger(SladiatorTransport.class);
+	public static String SOURCE = "JIRA "+System.getProperty("version");
 	private SladiatorConfigModel config;
 	private SimpleDateFormat dateFormat;
 	private String jiraUrl;
-//	public static String serviceUrl = "https://simplesla.ebit.lv";
-	public static String serviceUrl = "http://172.17.1.111:4444";
 	private Long eventTypeId;
 	private Issue issue;
 	private AvatarService avatarService;
@@ -76,6 +76,7 @@ public class SladiatorTransport implements Runnable {
 	
 	public JSONObject collectIssueInfo(Issue issue, boolean collectAssignee) throws JSONException {
 		JSONObject json = new JSONObject();
+		json.putOpt("source", SladiatorIssueListener.getSource());
 		json.putOpt("key", issue.getKey());
 		json.putOpt("issue_created_at", this.dateFormat.format(issue.getCreated()));
 		json.putOpt("issue_updated_at", this.dateFormat.format(issue.getUpdated()));
@@ -162,20 +163,21 @@ public class SladiatorTransport implements Runnable {
 		
 		return retList;
 	}
-	public String checkConnection() {
+	public static String ping(String url, String token) {
 		HttpClient client = new HttpClient();
 		int statusCode = 0;
 		String status = "";
-		PostMethod httpMethod = new PostMethod(SladiatorTransport.serviceUrl + "/api/tickets/");
-		httpMethod.setRequestHeader("Content-Type", "application/json");
-		httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
+		GetMethod httpMethod = new GetMethod(url+"/api/ping");
+		httpMethod.setRequestHeader("SLA_TOKEN", token);
 		try {
 			statusCode = client.executeMethod(httpMethod);
 		} catch (Exception e) {
 			status = e.getMessage()+". Please contact your system administrator";
 		}
 		if (statusCode == 401) {
-			status = "SLA token or Security token is not valid";
+			status = "SLA token is not valid";
+		} else if (statusCode == 404) {
+			status = "SLAdiator service URL is not valid. Please contact your system administrator";
 		} else if (statusCode == 500) {
 			status = "SLAdiator is currently not available, please try later";
 		}
@@ -188,20 +190,20 @@ public class SladiatorTransport implements Runnable {
 //		log.error("sending content "+body);
 		try {
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID)) {
-				PostMethod httpMethod = new PostMethod(SladiatorTransport.serviceUrl + "/api/tickets/");
+				PostMethod httpMethod = new PostMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/");
 				httpMethod.setRequestHeader("Content-Type", "application/json");
 				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
 				statusCode = client.executeMethod(httpMethod);
 			} else if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-				DeleteMethod httpMethod = new DeleteMethod(SladiatorTransport.serviceUrl + "/api/tickets/" + issue.getKey());
+				DeleteMethod httpMethod = new DeleteMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
 				httpMethod.setRequestHeader("Content-Type", "application/json");
 				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
 
 				statusCode = client.executeMethod(httpMethod);
 			} else {
-				PutMethod httpMethod = new PutMethod(SladiatorTransport.serviceUrl + "/api/tickets/" + issue.getKey());
+				PutMethod httpMethod = new PutMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
 				httpMethod.setRequestHeader("Content-Type", "application/json");
 				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
 

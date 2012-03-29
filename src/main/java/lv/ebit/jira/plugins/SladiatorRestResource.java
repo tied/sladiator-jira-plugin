@@ -96,17 +96,16 @@ public class SladiatorRestResource {
 		return Response.ok("Configuration deleted successfully").build();		
 	}
 	
-	@Path("/connection")
+	@Path("/ping")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response connection(SladiatorConfigModel config, @Context HttpServletRequest request) {
+	public Response ping(SladiatorConfigModel config, @Context HttpServletRequest request) {
 		if (!isAuthorized(request, config.getProject())) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 		
 		if (config.isValid()) {
-			SladiatorTransport job = new SladiatorTransport(config);
-			String status = job.checkConnection();
+			String status = SladiatorTransport.ping(SladiatorIssueListener.getServiceUrl(), config.getSlaToken());
 			if (status.isEmpty()) {
 				return Response.ok("Connection to SLAdiator was succesfull").build();
 			} else {
@@ -140,8 +139,7 @@ public class SladiatorRestResource {
 			errors = errors+ " Invalid date format.";
 		}
 		SladiatorConfigModel config = getSladiatorConfig(teleport.project);
-		SladiatorTransport connection = new SladiatorTransport(config);
-		String status = connection.checkConnection();
+		String status = SladiatorTransport.ping(SladiatorIssueListener.getServiceUrl(), config.getSlaToken());
 		
 		if (!status.isEmpty()) {
 			errors = errors + " "+status;
@@ -174,8 +172,7 @@ public class SladiatorRestResource {
 		}
 		
 		SladiatorConfigModel config = getSladiatorConfig(janitor.project);
-		SladiatorTransport connection = new SladiatorTransport(config);
-		String status = connection.checkConnection();
+		String status = SladiatorTransport.ping(SladiatorIssueListener.getServiceUrl(), config.getSlaToken());
 		
 		if (status.isEmpty()) {
 			
@@ -197,6 +194,51 @@ public class SladiatorRestResource {
 		private String project;
 	}
 	
+	@Path("/admin")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response adminConfig(final AdminConfigModel config,@Context HttpServletRequest request) {
+		if (!isAdmin(request)) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		if (config.service_url.isEmpty()) {
+			return Response.serverError().entity("URL is not present").build();
+		} else {
+			SladiatorIssueListener.setServiceUrl(config.service_url);
+			return Response.ok("Configuration saved successfully").build();
+		}
+		
+				
+	}
+	
+	@Path("/test_service")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response testService(final AdminConfigModel config,@Context HttpServletRequest request) {
+		if (!isAdmin(request)) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		if (config.service_url.isEmpty()) {
+			return Response.serverError().entity("URL is not present").build();
+		} else {
+			String status = SladiatorTransport.ping(config.service_url,"");
+			if (status.isEmpty()) {
+				return Response.ok("Service URL is valid").build();
+			} else {
+				return Response.serverError().entity(status).build();
+			}
+			
+		}
+		
+				
+	}
+	
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static final class AdminConfigModel {
+		@XmlElement
+		private String service_url;
+	}
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
 		Project project = new DefaultProjectManager().getProjectObj(Long.valueOf(projectId));
 		String username = userManager.getRemoteUsername(request);
@@ -206,6 +248,14 @@ public class SladiatorRestResource {
 		return true;
 	}
 	
+	private boolean isAdmin(HttpServletRequest request) {
+		String username = userManager.getRemoteUsername(request);
+        if (username == null || username != null && !userManager.isSystemAdmin(username))
+        {
+            return false;
+        }
+        return true;
+	}
 	private SladiatorConfigModel getSladiatorConfig(String project) {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		return new SladiatorConfigModel(pluginSettings.get(project));

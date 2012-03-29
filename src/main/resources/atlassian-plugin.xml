@@ -13,6 +13,8 @@
   <component-import key="avatarService" interface="com.atlassian.jira.avatar.AvatarService" />
   <component-import key="searchProvider" interface="com.atlassian.jira.issue.search.SearchProvider" />
   <component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
+  <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />
+  <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider" />
   
 	<project-tabpanel key="panel" name="SLAdiator Project Tab"
 		class="lv.ebit.jira.plugins.SladiatorProjectTab">
@@ -22,6 +24,7 @@
 		<label key="SLAdiator" />
 		<order>50</order>
 		<resource type="velocity" name="config" location="templates/config.vm" />
+		<param name="noTitle">true</param>
 	</project-tabpanel>
   
   <component key="issue-listener" class="lv.ebit.jira.plugins.SladiatorIssueListener">
@@ -32,10 +35,27 @@
       <description>Provides REST resources for the SLAdiator configuration</description>
   </rest>
   
+  <servlet key="config" class="lv.ebit.jira.plugins.SladiatorAdminServlet" value="enabled">
+      <url-pattern>/sladiator/config</url-pattern>
+      <description>SLAdiator Admin configuration GUI</description>
+  </servlet>
+  
+  <web-item key="jira-menu-item" name="SLAdiator Admin Config" section="system.admin/globalsettings" weight="10" application="jira">
+      <description>Link to SLAdiator Admin configuration page.</description> 
+      <label key="SLAdiator" /> 
+      <link linkId="sladiator-admin-config">/plugins/servlet/sladiator/config</link> 
+  </web-item>
+  
   <web-resource name="SLAdiator assets" key="assets"> 
       <dependency>com.atlassian.auiplugin:ajs</dependency> 
       <resource type="download" name="sladiator.js" location="javascripts/sladiator.js"/>
       <resource type="download" name="sladiator.css" location="stylesheets/sladiator.css"/>
+  </web-resource>
+  
+  <web-resource name="SLAdiator admin assets" key="admin_assets"> 
+      <dependency>com.atlassian.auiplugin:ajs</dependency> 
+      <resource type="download" name="sladiator.js" location="javascripts/admin_sladiator.js"/>
+      <resource type="download" name="sladiator.css" location="stylesheets/admin_sladiator.css"/>
   </web-resource>
   
   <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"

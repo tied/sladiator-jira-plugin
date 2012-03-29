@@ -22,6 +22,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	private final EventPublisher eventPublisher;
 	private List<Long> validEventsList;
 	private static PluginSettingsFactory pluginSettingsFactory;
+	private static ApplicationProperties applicationProperties;
 	private final AvatarService avatarService;
 	private String jiraUrl;
 	
@@ -67,6 +68,22 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		return new ArrayList<String>(Arrays.asList(pluginSettings.get("errors"+project).toString().split(",")));
 	}
+	
+	public static String getServiceUrl() {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
+		if (pluginSettings.get("service_url") == null) {
+			return "https://simplesla.ebit.lv";
+		} else {
+			return pluginSettings.get("service_url").toString();
+		}
+	}
+	public static void setServiceUrl(String url) {
+		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
+		pluginSettings.put("service_url",url);
+	}
+	public static String getSource() {
+		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v0.0.2";
+	}
 	/**
 	 * Constructor.
 	 * 
@@ -78,7 +95,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		this.avatarService = avatarService;
 		this.eventPublisher = eventPublisher;
 		SladiatorIssueListener.pluginSettingsFactory = pluginSettingsFactory;
-		
+		SladiatorIssueListener.applicationProperties = applicationProperties; 
 		this.validEventsList = new ArrayList<Long>();
 		this.validEventsList.add(EventType.ISSUE_CREATED_ID);
 		this.validEventsList.add(EventType.ISSUE_UPDATED_ID);
