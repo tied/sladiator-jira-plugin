@@ -46,11 +46,10 @@ public class SladiatorProjectTab extends AbstractProjectTabPanel {
 		return descriptor.getHtml("config", velocityParams);
 		
 	}
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean showPanel(BrowseContext browseContext) {
 		this.project = browseContext.getProject();
-		this.isProjectLead = (project.getLeadUser().getName() == browseContext.getUser().getName());
+		this.isProjectLead = (project.getLead().getName() == browseContext.getUser().getName());
 		return this.isProjectLead;
 	}
 

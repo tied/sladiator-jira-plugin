@@ -9,7 +9,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
-import com.atlassian.jira.avatar.AvatarService;
+//import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
@@ -23,7 +23,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	private List<Long> validEventsList;
 	private static PluginSettingsFactory pluginSettingsFactory;
 	private static ApplicationProperties applicationProperties;
-	private final AvatarService avatarService;
+//	private final AvatarService avatarService;
 	private String jiraUrl;
 	
 	@EventListener
@@ -34,7 +34,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 			PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 			SladiatorConfigModel configuration = new SladiatorConfigModel(pluginSettings.get(issue.getProjectObject().getId().toString()));
 			if (configuration.sendToSladiator()) {
-				Runnable transport = new SladiatorTransport(configuration, this.jiraUrl,eventTypeId ,issue, this.avatarService);
+				Runnable transport = new SladiatorTransport(configuration, this.jiraUrl,eventTypeId ,issue);
 				new Thread(transport).start();
 			}
 		}
@@ -90,9 +90,9 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	 * @param eventPublisher
 	 *            injected {@code EventPublisher} implementation.
 	 */
-	public SladiatorIssueListener(EventPublisher eventPublisher, PluginSettingsFactory pluginSettingsFactory, ApplicationProperties applicationProperties, AvatarService avatarService) {
+	public SladiatorIssueListener(EventPublisher eventPublisher, PluginSettingsFactory pluginSettingsFactory, ApplicationProperties applicationProperties) {
 		this.jiraUrl = applicationProperties.getBaseUrl();
-		this.avatarService = avatarService;
+//		this.avatarService = avatarService;
 		this.eventPublisher = eventPublisher;
 		SladiatorIssueListener.pluginSettingsFactory = pluginSettingsFactory;
 		SladiatorIssueListener.applicationProperties = applicationProperties; 

@@ -20,9 +20,8 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	          <div class="infoBox" style="display:none;"></div>
 	          <fieldset>
 	            <div class="field-group">
-	              <label for="sla_token">SLA token
-	                <span class="aui-icon icon-required"></span>
-	                <span class="content">required</span>
+	              <label for="sla_token">
+	                <span class="required"><sup>*</sup>SLA token</span>
 	              </label>
 	              <input class="text long-field" maxlength="50" name="sla_token" type="text" id="sla_token" value="$sla.getSlaToken()" />
 	              <div class="description">Copy SLA token given in SLAdiator.com configuration page.</div>
@@ -85,9 +84,8 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	          <div class="field-group">
 	            <label for="teleport_date_from">Starting from</label> 
 	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="date_from" />
-	            <a href="#" id="date_from-trigger" title="Select a date">
-	              <span class="aui-icon icon-date">Select a date</span>
-	            </a>
+	            <img id="date_from-trigger" title="Select a date" src="/jira/images/icons/cal.gif" />
+
 	            <div class="description">Date from which tickets needs to be sent to SLAdiator.</div>
 	            <script type="text/javascript">
 	                Calendar.setup({

@@ -20,9 +20,8 @@
             <div class="infoBox" style="display:none;"></div>
             <fieldset>
               <div class="field-group">
-                <label for="service_url">SLAdiator URL
-                  <span class="aui-icon icon-required"></span>
-                  <span class="content">required</span>
+                <label for="service_url">
+                  <span class="required"><sup>*</sup>SLAdiator URL</span>
                 </label>
                 <input class="text long-field" maxlength="50" name="service_url" type="text" id="service_url" value="$service_url" />
                 <div class="description">Change SLAdiator service URL if you bought your local copy of SLAdiator.</div>

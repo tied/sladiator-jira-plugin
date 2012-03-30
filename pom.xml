@@ -30,7 +30,7 @@
 			<version>4.6</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+    <dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-func-tests</artifactId>
 			<version>${jira.version}</version>
@@ -85,8 +85,8 @@
 	</build>
 
 	<properties>
-		<jira.version>4.3</jira.version>
-		<jira.data.version>4.3</jira.data.version>
+		<jira.version>4.2</jira.version>
+		<jira.data.version>4.2</jira.data.version>
 		<amps.version>3.7.3</amps.version>
 	</properties>
 

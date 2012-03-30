@@ -28,7 +28,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.jira.avatar.AvatarService;
+//import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.project.DefaultProjectManager;
 import com.atlassian.jira.project.Project;
@@ -39,17 +39,17 @@ public class SladiatorRestResource {
 	public static final Logger log = LoggerFactory.getLogger(SladiatorRestResource.class);
 	private final PluginSettingsFactory pluginSettingsFactory;
 	private final TransactionTemplate transactionTemplate;
-	private final AvatarService avatarService;
+//	private final AvatarService avatarService;
 	private final SearchProvider searchProvider;
 	private final UserManager userManager;
 	private final String jiraUrl;
 	
-	public SladiatorRestResource(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, UserManager userManager, ApplicationProperties applicationProperties, AvatarService avatarService, SearchProvider searchProvider) {
+	public SladiatorRestResource(PluginSettingsFactory pluginSettingsFactory, TransactionTemplate transactionTemplate, UserManager userManager, ApplicationProperties applicationProperties, SearchProvider searchProvider) {
 		this.pluginSettingsFactory = pluginSettingsFactory;
 		this.transactionTemplate = transactionTemplate;
 		this.userManager = userManager;
 		this.jiraUrl = applicationProperties.getBaseUrl();
-		this.avatarService = avatarService;
+//		this.avatarService = avatarService;
 		this.searchProvider = searchProvider;
 	}
 	
@@ -127,7 +127,7 @@ public class SladiatorRestResource {
 			errors = errors + " "+status;
 		}
 		if (errors.isEmpty()) {
-			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
+			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, new DefaultProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLead());
 			job.run();
 			String success = job.getTotalProcessed() + " issues sent to RealSLA";
 			return Response.ok(success).build();
@@ -159,7 +159,7 @@ public class SladiatorRestResource {
 		if (status.isEmpty()) {
 			
 			ArrayList<String> keys = SladiatorIssueListener.getFailedIssues(janitor.project);
-			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLeadUser());
+			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, new DefaultProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLead());
 			job.run();
 			return Response.ok().build();
 		} else {
@@ -224,7 +224,7 @@ public class SladiatorRestResource {
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
 		Project project = new DefaultProjectManager().getProjectObj(Long.valueOf(projectId));
 		String username = userManager.getRemoteUsername(request);
-		if (username == null || username != null && project.getLeadUser().getName() != username) {
+		if (username == null || username != null && project.getLead().getName() != username) {
 			return false;
 		}
 		return true;

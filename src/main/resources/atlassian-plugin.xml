@@ -10,7 +10,6 @@
   <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
   <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
   <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" />
-  <component-import key="avatarService" interface="com.atlassian.jira.avatar.AvatarService" />
   <component-import key="searchProvider" interface="com.atlassian.jira.issue.search.SearchProvider" />
   <component-import key="eventPublisher" interface="com.atlassian.event.api.EventPublisher"/>
   <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />

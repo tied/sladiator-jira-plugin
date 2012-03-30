@@ -1,7 +1,7 @@
 package lv.ebit.jira.plugins;
 
 import java.io.IOException;
-import java.net.URI;
+//import java.net.URI;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,19 +23,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.core.ofbiz.CoreFactory;
-import com.atlassian.crowd.embedded.api.User;
-import com.atlassian.jira.avatar.Avatar;
-import com.atlassian.jira.avatar.AvatarService;
-import com.atlassian.jira.bc.project.component.ProjectComponent;
-import com.atlassian.jira.component.ComponentAccessor;
+//import com.atlassian.crowd.embedded.api.User;
+//import com.atlassian.jira.avatar.Avatar;
+//import com.atlassian.jira.avatar.AvatarService;
+//import com.atlassian.jira.bc.project.component.ProjectComponent;
+//import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.ManagerFactory;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.label.Label;
+//import com.atlassian.jira.issue.label.Label;
 import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.atlassian.jira.util.collect.MapBuilder;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
+import com.opensymphony.user.User;
 
 public class SladiatorTransport implements Runnable {
 	public static final Logger log = LoggerFactory.getLogger(SladiatorTransport.class);
@@ -45,14 +47,14 @@ public class SladiatorTransport implements Runnable {
 	private String jiraUrl;
 	private Long eventTypeId;
 	private Issue issue;
-	private AvatarService avatarService;
+//	private AvatarService avatarService;
 
-	public SladiatorTransport(SladiatorConfigModel config, String jiraUrl, Long eventTypeId, Issue issue, AvatarService avatarService) {
+	public SladiatorTransport(SladiatorConfigModel config, String jiraUrl, Long eventTypeId, Issue issue) {
 		this.config = config;
 		this.jiraUrl = jiraUrl;
 		this.eventTypeId = eventTypeId;
 		this.issue = issue;
-		this.avatarService = avatarService;
+//		this.avatarService = avatarService;
 		this.dateFormat = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 		this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
@@ -97,28 +99,20 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("project", issue.getProjectObject().getKey());
 		json.putOpt("url", jiraUrl+"/browse/" + issue.getKey());
 		
-		
-		Iterator<Label> label = issue.getLabels().iterator();
-		List<String> labels = new ArrayList<String>();
-		while (label.hasNext()) {
-			labels.add(label.next().toString());
-		}
-		json.putOpt("labels", labels);
-		
-		Iterator<ProjectComponent> component = issue.getComponentObjects().iterator();
+		Iterator<GenericValue> component = issue.getComponents().iterator();
 		List<String> components = new ArrayList<String>();
 		while (component.hasNext()) {
-			components.add(component.next().getName());
+			components.add(component.next().getString("name"));
 		}
 		json.putOpt("components", components);
 		
 		if (collectAssignee) {
-			User assignee = issue.getAssigneeUser();
+			User assignee = issue.getAssignee();
 			if (assignee != null) {
-				json.putOpt("assignee", assignee.getDisplayName());
-				json.putOpt("assignee_email", assignee.getEmailAddress());
-				URI jira_uri = URI.create(jiraUrl);
-				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE)));
+				json.putOpt("assignee", assignee.getFullName());
+				json.putOpt("assignee_email", assignee.getEmail());
+//				URI jira_uri = URI.create(jiraUrl);
+//				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE)));
 			}
 		}
 
@@ -158,12 +152,13 @@ public class SladiatorTransport implements Runnable {
 //				json.put("entered_at", entered_at);
 				json.put("exited_at", this.dateFormat.format(changeGroup.getTimestamp("created")));
 //				json.put("exited_at", changeGroup.getTimestamp("created"));
-				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
-				json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
+				
+				json.put("status_to", ManagerFactory.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
+//				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
+//				json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
+				json.put("status", ManagerFactory.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
 				retList.add(json);
 				entered_at = changeGroup.getTimestamp("created");
-				// Deprecated. Use ComponentAccessor instead. Since v4.4.
-				// ManagerFactory.getConstantsManager().getStatusObject(changeItem.getString("newvalue"));
 			}
 
 		}
