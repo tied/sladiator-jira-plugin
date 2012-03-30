@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>lv.ebit.jira.plugins</groupId>
 	<artifactId>sladiator</artifactId>
-	<version>0.0.2</version>
+	<version>1.0.0</version>
 
 	<organization>
 		<name>eBIT LLC</name>
