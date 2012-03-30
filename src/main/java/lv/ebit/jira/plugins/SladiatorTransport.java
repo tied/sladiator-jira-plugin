@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.atlassian.core.ofbiz.CoreFactory;
 import com.atlassian.crowd.embedded.api.User;
+import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.bc.project.component.ProjectComponent;
@@ -31,6 +32,7 @@ import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.label.Label;
+import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.atlassian.jira.util.collect.MapBuilder;
@@ -97,6 +99,25 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("project", issue.getProjectObject().getKey());
 		json.putOpt("url", jiraUrl+"/browse/" + issue.getKey());
 		
+		List<HashMap<String,String>> links = new ArrayList<HashMap<String,String>>();
+		
+		Iterator<IssueLink> link = ComponentManager.getInstance().getIssueLinkManager().getInwardLinks(issue.getId()).iterator();
+		while (link.hasNext()) {
+			IssueLink currentLink = link.next();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("key",currentLink.getSourceObject().getKey());
+			map.put("link",currentLink.getIssueLinkType().getInward());
+			links.add(map);
+		}
+		link = ComponentManager.getInstance().getIssueLinkManager().getOutwardLinks(issue.getId()).iterator();
+		while (link.hasNext()) {
+			IssueLink currentLink = link.next();
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("key",currentLink.getDestinationObject().getKey());
+			map.put("link", currentLink.getIssueLinkType().getOutward());
+			links.add(map);
+		}
+		json.putOpt("links", links);
 		
 		Iterator<Label> label = issue.getLabels().iterator();
 		List<String> labels = new ArrayList<String>();

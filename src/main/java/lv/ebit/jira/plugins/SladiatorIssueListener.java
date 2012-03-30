@@ -28,6 +28,9 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	
 	@EventListener
 	public void onIssueEvent(IssueEvent issueEvent) {
+		//FIXME
+		//"Issue linked" is not calling event :(
+		//https://jira.atlassian.com/browse/JRA-8505
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
 		if (this.validEventsList.contains(eventTypeId)) {
