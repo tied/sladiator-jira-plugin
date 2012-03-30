@@ -1,6 +1,6 @@
 AJS.toInit(function() {
   var baseUrl = AJS.$("#baseURL").val();
-  var serviceUrl = AJS.$("#serviceUrl").val();
+  var serviceUrl = AJS.$("#serviceURL").val();
 
   function formToJSON(form)
   {
@@ -25,28 +25,6 @@ AJS.toInit(function() {
     });
   }
   
-  function testSLA() {
-    jQuery.fn.isDirty = function () {return false;}
-    AJS.$.ajax({
-      url : baseUrl + "/rest/sladiator/1.0/ping",
-      type : "POST",
-      contentType : "application/json",
-      data : formToJSON("#sladiator-project"),
-      beforeSend : function(jqXHR, settings) {
-        AJS.$("#freezer").show();
-      },
-      success : function(data, textStatus) {
-        AJS.$("#freezer").hide();
-        AJS.$("#sladiator-project .warningBox").hide();
-        AJS.$("#sladiator-project .infoBox").html(data).show();
-      },
-      error : function(jqXHR, textStatus, errorThrown) {
-        AJS.$("#freezer").hide();
-        AJS.$("#sladiator-project .infoBox").hide();
-        AJS.$("#sladiator-project .warningBox").html(jqXHR.responseText).show();
-      }
-    });
-  }
   function visitSLA() {
     token = AJS.$("#sla_token").val();
     if ( token != "") {
@@ -114,10 +92,6 @@ AJS.toInit(function() {
   AJS.$("#saveSLA").click(function(e) {
     e.preventDefault();
     maintainSLA();
-  });
-  AJS.$("#testSLA").click(function(e) {
-    e.preventDefault();
-    testSLA();
   });
   AJS.$("#visitSLA").click(function(e) {
     e.preventDefault();

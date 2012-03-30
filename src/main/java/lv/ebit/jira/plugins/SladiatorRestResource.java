@@ -60,22 +60,25 @@ public class SladiatorRestResource {
 		if (!isAuthorized(request, config.getProject())) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		transactionTemplate.execute(new TransactionCallback() {
-			public Object doInTransaction() {
-				if (config.isValid()) {
+		String status = SladiatorTransport.ping(SladiatorIssueListener.getServiceUrl(), config.getSlaToken());
+		if (config.isValid() && status.isEmpty()) {
+			transactionTemplate.execute(new TransactionCallback() {
+				public Object doInTransaction() {				
 					PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 					pluginSettings.put(config.getProject(),config.toString());
 					return true;
-				} else {
-					return false;
 				}
-			}
-		});
-		if (config.isValid()) {
-			return Response.ok("Configuration saved successfully").build();
+			});
+			return Response.ok("Configuration saved and tested successfully").build();
 		} else {
-			return Response.serverError().entity(config.getErrorMessages()).build();
-		}		
+
+			if (config.isValid()){
+				return Response.serverError().entity("Problems with connection to SLAdiator: "+ status).build();
+			} else {
+				return Response.serverError().entity(config.getErrorMessages()).build();
+			}
+			
+		}
 	}
 	
 	@Path("/config")
@@ -94,27 +97,6 @@ public class SladiatorRestResource {
 			}
 		});
 		return Response.ok("Configuration deleted successfully").build();		
-	}
-	
-	@Path("/ping")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response ping(SladiatorConfigModel config, @Context HttpServletRequest request) {
-		if (!isAuthorized(request, config.getProject())) {
-			return Response.status(Status.UNAUTHORIZED).build();
-		}
-		
-		if (config.isValid()) {
-			String status = SladiatorTransport.ping(SladiatorIssueListener.getServiceUrl(), config.getSlaToken());
-			if (status.isEmpty()) {
-				return Response.ok("Connection to SLAdiator was succesfull").build();
-			} else {
-				return Response.serverError().entity("Problems with connection to SLAdiator: "+ status).build();
-			}
-			
-		} else {
-			return Response.serverError().entity("Not all configuratio options are set!").build();
-		}
 	}
 	
 	@Path("/teleport")

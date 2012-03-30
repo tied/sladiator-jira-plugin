@@ -34,8 +34,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	          </fieldset>
 	          <div class="buttons-container content-footer">
 	            <div class="buttons">
-	               <input type="submit" name="save" id="saveSLA" value="Save" accesskey="s" class="button spaced " />
-	               <input type="button" name="test" id="testSLA" value="Test connection" class="button spaced " />
+	               <input type="submit" name="save" id="saveSLA" value="Save and Test" accesskey="s" class="button spaced " />
 	               <input type="button" name="visit" id="visitSLA" value="Visit SLA configuration in SLAdiator" class="button spaced " />
 	            </div>
 	          </div>
