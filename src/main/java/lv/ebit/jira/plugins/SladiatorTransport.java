@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -25,9 +26,11 @@ import com.atlassian.core.ofbiz.CoreFactory;
 import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarService;
+import com.atlassian.jira.bc.project.component.ProjectComponent;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.label.Label;
 import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.atlassian.jira.util.collect.MapBuilder;
@@ -91,14 +94,22 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("status", issue.getStatusObject().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
 		json.putOpt("url", jiraUrl+"/browse/" + issue.getKey());
-
-		// Iterator<ProjectComponent> component =
-		// issue.getComponentObjects().iterator();
-		// List<String> components = new ArrayList<String>();
-		// while (component.hasNext()) {
-		// components.add(component.next().getName());
-		// }
-		// json.putOpt("components", components);
+		
+		
+		Iterator<Label> label = issue.getLabels().iterator();
+		List<String> labels = new ArrayList<String>();
+		while (label.hasNext()) {
+			labels.add(label.next().toString());
+		}
+		json.putOpt("labels", labels);
+		
+		Iterator<ProjectComponent> component = issue.getComponentObjects().iterator();
+		List<String> components = new ArrayList<String>();
+		while (component.hasNext()) {
+			components.add(component.next().getName());
+		}
+		json.putOpt("components", components);
+		
 		if (collectAssignee) {
 			User assignee = issue.getAssigneeUser();
 			if (assignee != null) {
