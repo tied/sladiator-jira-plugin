@@ -72,7 +72,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	public static String getServiceUrl() {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		if (pluginSettings.get("service_url") == null) {
-			return "https://simplesla.ebit.lv";
+			return "https://sladiator.ebit.lv";
 		} else {
 			return pluginSettings.get("service_url").toString();
 		}
