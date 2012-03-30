@@ -89,7 +89,9 @@ public class SladiatorTransport implements Runnable {
 		} else {
 			json.putOpt("due_date", JSONObject.NULL);
 		}
-		json.putOpt("priority", issue.getPriorityObject().getName());
+		if (issue.getPriorityObject() != null) {
+			json.putOpt("priority", issue.getPriorityObject().getName());
+		}
 		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
 		json.putOpt("status", issue.getStatusObject().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
