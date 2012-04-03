@@ -29,9 +29,11 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 //import com.atlassian.jira.avatar.AvatarService;
+import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.project.DefaultProjectManager;
 import com.atlassian.jira.project.Project;
+import com.atlassian.jira.security.PermissionManager;
 
 
 @Path("/")
@@ -223,11 +225,13 @@ public class SladiatorRestResource {
 	}
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
 		Project project = new DefaultProjectManager().getProjectObj(Long.valueOf(projectId));
-		String username = userManager.getRemoteUsername(request);
-		if (username == null || username != null && project.getLead().getName() != username) {
-			return false;
+		PermissionManager permissionManager = ComponentManager.getInstance().getPermissionManager();
+		com.opensymphony.user.User user = (com.opensymphony.user.User)userManager.resolve(userManager.getRemoteUsername(request));
+	
+		if (project.getLeadUserName() == user.getName() || permissionManager.hasPermission(23, project, user)) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	private boolean isAdmin(HttpServletRequest request) {

@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.plugin.projectpanel.impl.AbstractProjectTabPanel;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.browse.BrowseContext;
+import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -49,7 +51,10 @@ public class SladiatorProjectTab extends AbstractProjectTabPanel {
 	@Override
 	public boolean showPanel(BrowseContext browseContext) {
 		this.project = browseContext.getProject();
-		this.isProjectLead = (project.getLead().getName() == browseContext.getUser().getName());
+		com.opensymphony.user.User user = browseContext.getUser();
+		PermissionManager permissionManager = ComponentManager.getInstance().getPermissionManager();
+
+		this.isProjectLead = (project.getLeadUserName() == user.getName() || permissionManager.hasPermission(23, this.project, user));
 		return this.isProjectLead;
 	}
 
