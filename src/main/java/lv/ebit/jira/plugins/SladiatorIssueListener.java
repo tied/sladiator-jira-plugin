@@ -11,7 +11,7 @@ import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 //import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.event.type.EventType;
+//import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
@@ -20,7 +20,7 @@ import com.google.common.base.Joiner;
 
 public class SladiatorIssueListener implements InitializingBean, DisposableBean {
 	private final EventPublisher eventPublisher;
-	private List<Long> validEventsList;
+//	private List<Long> validEventsList;
 	private static PluginSettingsFactory pluginSettingsFactory;
 	private static ApplicationProperties applicationProperties;
 //	private final AvatarService avatarService;
@@ -30,14 +30,14 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	public void onIssueEvent(IssueEvent issueEvent) {
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
-		if (this.validEventsList.contains(eventTypeId)) {
+//		if (this.validEventsList.contains(eventTypeId)) {
 			PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 			SladiatorConfigModel configuration = new SladiatorConfigModel(pluginSettings.get(issue.getProjectObject().getId().toString()));
 			if (configuration.sendToSladiator()) {
 				Runnable transport = new SladiatorTransport(configuration, this.jiraUrl,eventTypeId ,issue);
 				new Thread(transport).start();
 			}
-		}
+//		}
 	}
 	public static void addFailedIssue(String project, String key) {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
@@ -96,20 +96,20 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		this.eventPublisher = eventPublisher;
 		SladiatorIssueListener.pluginSettingsFactory = pluginSettingsFactory;
 		SladiatorIssueListener.applicationProperties = applicationProperties; 
-		this.validEventsList = new ArrayList<Long>();
-		this.validEventsList.add(EventType.ISSUE_CREATED_ID);
-		this.validEventsList.add(EventType.ISSUE_UPDATED_ID);
+//		this.validEventsList = new ArrayList<Long>();
+//		this.validEventsList.add(EventType.ISSUE_CREATED_ID);
+//		this.validEventsList.add(EventType.ISSUE_UPDATED_ID);
 //		this.validEventsList.add(EventType.ISSUE_ASSIGNED_ID);
-		this.validEventsList.add(EventType.ISSUE_RESOLVED_ID);
-		this.validEventsList.add(EventType.ISSUE_CLOSED_ID);
+//		this.validEventsList.add(EventType.ISSUE_RESOLVED_ID);
+//		this.validEventsList.add(EventType.ISSUE_CLOSED_ID);
 //		this.validEventsList.add(EventType.ISSUE_COMMENTED_ID);
-		this.validEventsList.add(EventType.ISSUE_REOPENED_ID);
-		this.validEventsList.add(EventType.ISSUE_DELETED_ID);
-		this.validEventsList.add(EventType.ISSUE_MOVED_ID);
+//		this.validEventsList.add(EventType.ISSUE_REOPENED_ID);
+//		this.validEventsList.add(EventType.ISSUE_DELETED_ID);
+//		this.validEventsList.add(EventType.ISSUE_MOVED_ID);
 //		this.validEventsList.add(EventType.ISSUE_WORKLOGGED_ID);
-		this.validEventsList.add(EventType.ISSUE_WORKSTARTED_ID);
-		this.validEventsList.add(EventType.ISSUE_WORKSTOPPED_ID);
-		this.validEventsList.add(EventType.ISSUE_GENERICEVENT_ID);
+//		this.validEventsList.add(EventType.ISSUE_WORKSTARTED_ID);
+//		this.validEventsList.add(EventType.ISSUE_WORKSTOPPED_ID);
+//		this.validEventsList.add(EventType.ISSUE_GENERICEVENT_ID);
 //		this.validEventsList.add(EventType.ISSUE_COMMENT_EDITED_ID);
 //		this.validEventsList.add(EventType.ISSUE_WORKLOG_UPDATED_ID);
 //		this.validEventsList.add(EventType.ISSUE_WORKLOG_DELETED_ID);
