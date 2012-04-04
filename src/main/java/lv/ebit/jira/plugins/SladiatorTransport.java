@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
@@ -31,7 +30,9 @@ import com.atlassian.core.ofbiz.CoreFactory;
 import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.ManagerFactory;
 import com.atlassian.jira.event.type.EventType;
+import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.link.IssueLink;
 //import com.atlassian.jira.issue.label.Label;
 import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
@@ -57,8 +58,8 @@ public class SladiatorTransport implements Runnable {
 		this.eventTypeId = eventTypeId;
 		this.issue = issue;
 //		this.avatarService = avatarService;
-		this.dateFormat = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-		this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		this.dateFormat = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss Z");
+//		this.dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 	
 	public SladiatorTransport(SladiatorConfigModel config) {
@@ -147,6 +148,39 @@ public class SladiatorTransport implements Runnable {
 			json.putOpt("resolution_date", JSONObject.NULL);
 		}
 		json.putOpt("transitions", getTransitions(issue));
+CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustomFieldManager();
+		
+		if (!this.config.getCustomField1().isEmpty()) {
+			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField1());
+			if (field.getValue(issue) != null) {
+				json.putOpt("custom_field1", field.getValue(issue).toString());
+			} else {
+				json.putOpt("custom_field1", JSONObject.NULL);
+			}
+			
+		} else {
+			json.putOpt("custom_field1", JSONObject.NULL);
+		}
+		if (!this.config.getCustomField2().isEmpty()) {
+			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField2());
+			if (field.getValue(issue) != null) {
+				json.putOpt("custom_field2", field.getValue(issue).toString());
+			} else {
+				json.putOpt("custom_field2", JSONObject.NULL);
+			}
+		} else {
+			json.putOpt("custom_field2", JSONObject.NULL);
+		}
+		if (!this.config.getCustomField3().isEmpty()) {
+			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField3());
+			if (field.getValue(issue) != null) {
+				json.putOpt("custom_field3", field.getValue(issue).toString());
+			} else {
+				json.putOpt("custom_field3", JSONObject.NULL);
+			}
+		} else {
+			json.putOpt("custom_field3", JSONObject.NULL);
+		}
 		return json;
 	}
 	public List<JSONObject> getTransitions(Issue issue) throws JSONException {

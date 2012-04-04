@@ -30,6 +30,36 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
                  <label for="send_assignee">Include assignee?</label>
                  <input class="checkbox " name="send_assignee" type="checkbox" value="1" id="send_assignee" $sla.checkedSendAssignee()>
               </div>
+              <fieldset>
+                <legend>Include custom fields if you need them for SLA</legend>
+                <div class="field-group">
+                  <label for="custom_field1">Custom field 1</label>
+                   <select name="custom_field1" id="custom_field1">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField1($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+                <div class="field-group">
+                  <label for="custom_field2">Custom field 2</label>
+                   <select name="custom_field2" id="custom_field2">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField2($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+                <div class="field-group">
+                  <label for="custom_field3">Custom field 3</label>
+                   <select name="custom_field3" id="custom_field3">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField3($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+              </fieldset>
 	          </fieldset>
 	          <div class="buttons-container content-footer">
 	            <div class="buttons">

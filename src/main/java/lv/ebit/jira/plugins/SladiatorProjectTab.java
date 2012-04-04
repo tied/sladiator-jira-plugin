@@ -3,10 +3,14 @@ package lv.ebit.jira.plugins;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.atlassian.jira.ComponentManager;
+import com.atlassian.jira.issue.CustomFieldManager;
+import com.atlassian.jira.issue.fields.CustomField;
+import com.atlassian.jira.issue.issuetype.IssueType;
 import com.atlassian.jira.plugin.projectpanel.impl.AbstractProjectTabPanel;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.browse.BrowseContext;
@@ -45,6 +49,16 @@ public class SladiatorProjectTab extends AbstractProjectTabPanel {
         }
 		velocityParams.put("errors",errors);
 		velocityParams.put("issue_url",applicationProperties.getBaseUrl()+"/browse/");
+		
+		List<String> issueTypes = new ArrayList<String>();
+		for(Iterator<IssueType> iterator = ComponentManager.getInstance().getIssueTypeSchemeManager().getIssueTypesForProject(this.project).iterator(); iterator.hasNext();) {
+			issueTypes.add(iterator.next().getId());
+		}
+		
+		CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustomFieldManager();
+		List<CustomField> customFields = customFieldManager.getCustomFieldObjects(this.project.getId(), issueTypes);
+		velocityParams.put("customFields",customFields);
+		
 		return descriptor.getHtml("config", velocityParams);
 		
 	}
