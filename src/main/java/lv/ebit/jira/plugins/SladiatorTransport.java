@@ -86,7 +86,7 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("issue_created_at", this.dateFormat.format(issue.getCreated()));
 		json.putOpt("issue_updated_at", this.dateFormat.format(issue.getUpdated()));
 		if (issue.getDueDate() != null) {
-			json.putOpt("due_date", this.dateFormat.format(issue.getDueDate()));
+			json.putOpt("due_date", this.dateFormat.format(issue.getDueDate().getTime() + ((24 * 60 * 60) - 1) * 1000));
 //			json.putOpt("due_date", issue.getDueDate());
 		} else {
 			json.putOpt("due_date", JSONObject.NULL);
