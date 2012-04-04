@@ -42,7 +42,6 @@ import com.atlassian.jira.util.json.JSONObject;
 
 public class SladiatorTransport implements Runnable {
 	public static final Logger log = LoggerFactory.getLogger(SladiatorTransport.class);
-	public static String SOURCE = "JIRA "+System.getProperty("version");
 	private SladiatorConfigModel config;
 	private SimpleDateFormat dateFormat;
 	private String jiraUrl;
