@@ -147,12 +147,15 @@ public class SladiatorTransport implements Runnable {
 			json.putOpt("resolution_date", JSONObject.NULL);
 		}
 		json.putOpt("transitions", getTransitions(issue));
-CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustomFieldManager();
+		
+		CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustomFieldManager();
 		
 		if (!this.config.getCustomField1().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField1());
-			if (field.getValue(issue) != null) {
-				json.putOpt("custom_field1", field.getValue(issue).toString());
+			
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field1", value);
 			} else {
 				json.putOpt("custom_field1", JSONObject.NULL);
 			}
@@ -162,8 +165,9 @@ CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustom
 		}
 		if (!this.config.getCustomField2().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField2());
-			if (field.getValue(issue) != null) {
-				json.putOpt("custom_field2", field.getValue(issue).toString());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field2", value);
 			} else {
 				json.putOpt("custom_field2", JSONObject.NULL);
 			}
@@ -172,8 +176,9 @@ CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustom
 		}
 		if (!this.config.getCustomField3().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField3());
-			if (field.getValue(issue) != null) {
-				json.putOpt("custom_field3", field.getValue(issue).toString());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field3", value);
 			} else {
 				json.putOpt("custom_field3", JSONObject.NULL);
 			}
