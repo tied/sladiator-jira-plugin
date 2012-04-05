@@ -98,7 +98,6 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("status", issue.getStatusObject().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
 		json.putOpt("url", jiraUrl+"/browse/" + issue.getKey());
-		
 		List<HashMap<String,String>> links = new ArrayList<HashMap<String,String>>();
 		
 		Iterator<IssueLink> link = ComponentManager.getInstance().getIssueLinkManager().getInwardLinks(issue.getId()).iterator();
@@ -157,8 +156,10 @@ public class SladiatorTransport implements Runnable {
 		
 		if (!this.config.getCustomField1().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField1());
-			if (field.getValue(issue) != null) {
-				json.putOpt("custom_field1", field.getValue(issue).toString());
+			
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field1", value);
 			} else {
 				json.putOpt("custom_field1", JSONObject.NULL);
 			}
@@ -168,8 +169,9 @@ public class SladiatorTransport implements Runnable {
 		}
 		if (!this.config.getCustomField2().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField2());
-			if (field.getValue(issue) != null) {
-				json.putOpt("custom_field2", field.getValue(issue).toString());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field2", value);
 			} else {
 				json.putOpt("custom_field2", JSONObject.NULL);
 			}
@@ -178,8 +180,9 @@ public class SladiatorTransport implements Runnable {
 		}
 		if (!this.config.getCustomField3().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField3());
-			if (field.getValue(issue) != null) {
-				json.putOpt("custom_field3", field.getValue(issue).toString());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field3", value);
 			} else {
 				json.putOpt("custom_field3", JSONObject.NULL);
 			}
