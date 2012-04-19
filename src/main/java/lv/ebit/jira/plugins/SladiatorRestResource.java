@@ -94,7 +94,7 @@ public class SladiatorRestResource {
 			public Object doInTransaction() {
 				PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 				pluginSettings.remove(config.getProject());
-				pluginSettings.get("errors"+config.getProject());
+				pluginSettings.remove("errors"+config.getProject());
 				return true;
 			}
 		});
