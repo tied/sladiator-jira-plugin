@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
@@ -266,12 +265,6 @@ public class SladiatorTransport implements Runnable {
 				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
-				statusCode = client.executeMethod(httpMethod);
-			} else if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
-				DeleteMethod httpMethod = new DeleteMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
-				httpMethod.setRequestHeader("Content-Type", "application/json");
-				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
-
 				statusCode = client.executeMethod(httpMethod);
 			} else {
 				PutMethod httpMethod = new PutMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
