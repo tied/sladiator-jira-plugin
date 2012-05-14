@@ -158,5 +158,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	   #end
 		#end
 	</div>
-	<div class="aui-blanket" id="freezer" style="display: none;"></div>
+	<div class="aui-blanket" id="freezer" style="display: none;">
+    <div class="aui-loading" style="display: block; "></div>
+  </div>
 </div>

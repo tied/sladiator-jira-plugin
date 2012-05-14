@@ -1,7 +1,16 @@
 AJS.toInit(function() {
+  
   var baseUrl = AJS.$("#baseURL").val();
   var serviceUrl = AJS.$("#serviceURL").val();
-
+  
+  function startProgress() {
+    AJS.$("#freezer").show();
+  }
+  
+  function stopProgress() {
+    AJS.$("#freezer").hide();
+  }
+  
   function formToJSON(form)
   {
     return "{"+AJS.$(form).serializeArray().map(function(i){return '"'+i.name+'":'+'"'+escape(i.value)+'"'}).join(",")+"}";
@@ -14,11 +23,16 @@ AJS.toInit(function() {
       type : "POST",
       contentType : "application/json",
       data : formToJSON("#sladiator-project"),
+      beforeSend : function(jqXHR, settings) {
+        startProgress();
+      },
       success : function(data, textStatus) {
+        stopProgress();
         AJS.$("#sladiator-project .warningBox").hide();
         AJS.$("#sladiator-project .infoBox").html(data).show();
       },
       error : function(jqXHR, textStatus, errorThrown) {
+        stopProgress();
         AJS.$("#sladiator-project .infoBox").hide();
         AJS.$("#sladiator-project .warningBox").html(jqXHR.responseText).show();
       }
@@ -40,15 +54,15 @@ AJS.toInit(function() {
       contentType : "application/json",
       data : formToJSON("#sladiator-teleprot"),
       beforeSend : function(jqXHR, settings) {
-        AJS.$("#freezer").show();
+        startProgress();
       },
       success : function(data, textStatus) {
-        AJS.$("#freezer").hide();
+        stopProgress();
         AJS.$("#sladiator-teleprot .warningBox").hide();
         AJS.$("#sladiator-teleprot .infoBox").html(data).show();
       },
       error : function(jqXHR, textStatus, errorThrown) {
-        AJS.$("#freezer").hide();
+        stopProgress();
         AJS.$("#sladiator-teleprot .infoBox").hide();
         AJS.$("#sladiator-teleprot .warningBox").html(jqXHR.responseText).show();
       }
@@ -62,14 +76,14 @@ AJS.toInit(function() {
       contentType : "application/json",
       data : formToJSON("#sladiator-janitor"),
       beforeSend : function(jqXHR, settings) {
-        AJS.$("#freezer").show();
+        startProgress();
       },
       success : function(data, textStatus) {
-        AJS.$("#freezer").hide();
+        stopProgress();
         window.location.reload();
       },
       error : function(jqXHR, textStatus, errorThrown) {
-        AJS.$("#freezer").hide();
+        stopProgress();
         AJS.$("#sladiator-janitor .warningBox").html(jqXHR.responseText).show();
       }
     });
