@@ -5,6 +5,8 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -194,10 +196,15 @@ public class SladiatorTransport implements Runnable {
 		OfBizDelegator delegator = new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
 		Map<String, Long> params = MapBuilder.build("issue", issue.getId());
 		List<GenericValue> changeGroups = delegator.findByAnd("ChangeGroup", params);
-
-		List<JSONObject> retList = new ArrayList<JSONObject>();
 		
+		Collections.sort(changeGroups, new Comparator<GenericValue>() {
+			public int compare(GenericValue o1, GenericValue o2) {
+	        	return o1.getTimestamp("created").compareTo(o2.getTimestamp("created"));
+	        }
+	    });
+		List<JSONObject> retList = new ArrayList<JSONObject>();
 		Timestamp entered_at = issue.getCreated();
+		
 		for (GenericValue changeGroup : changeGroups) {
 			// starting from 4.4
 			// Map<String, ? extends Object> paramsItem =
