@@ -1,3 +1,13 @@
+#freezer {
+	background: black;
+  height: 100%;
+  left: 0;
+  opacity: .5;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 2500;
+}
 .warningBox, .infoBox {
   padding-top: 6px !important;
   padding-left: 33px !important;
