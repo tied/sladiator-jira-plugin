@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +14,6 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
@@ -192,6 +193,12 @@ public class SladiatorTransport implements Runnable {
 		Map<String, Long> params = MapBuilder.build("issue", issue.getId());
 		List<GenericValue> changeGroups = delegator.findByAnd("ChangeGroup", params);
 
+		Collections.sort(changeGroups, new Comparator<GenericValue>() {
+			public int compare(GenericValue o1, GenericValue o2) {
+	        	return o1.getTimestamp("created").compareTo(o2.getTimestamp("created"));
+	        }
+	    });
+		
 		List<JSONObject> retList = new ArrayList<JSONObject>();
 		
 		Timestamp entered_at = issue.getCreated();
