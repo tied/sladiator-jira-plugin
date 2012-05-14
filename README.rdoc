@@ -1,0 +1,9 @@
+== SLA online tracking tool for JIRA and other ticketing systems
+
+* Alarm before sla breached - no penalties
+
+* Tool for suppliers and customers - unified view
+
+* Fast reports - more time for analysis
+
+Visit https://plugins.atlassian.com/plugins/lv.ebit.jira.plugins.sladiator for a screenshots and more information
