@@ -60,6 +60,33 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
                      #end
                    </select>
                 </div>
+                <div class="field-group">
+                  <label for="custom_field4">Custom field 4</label>
+                   <select name="custom_field4" id="custom_field4">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField4($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+                <div class="field-group">
+                  <label for="custom_field5">Custom field 5</label>
+                   <select name="custom_field5" id="custom_field5">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField5($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+                <div class="field-group">
+                  <label for="custom_field6">Custom field 6</label>
+                   <select name="custom_field6" id="custom_field6">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField6($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
               </fieldset>
 	          </fieldset>
 	          <div class="buttons-container content-footer">
