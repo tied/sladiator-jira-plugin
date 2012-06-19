@@ -186,6 +186,39 @@ public class SladiatorTransport implements Runnable {
 		} else {
 			json.putOpt("custom_field3", JSONObject.NULL);
 		}
+		if (!this.config.getCustomField4().isEmpty()) {
+			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField4());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field4", value);
+			} else {
+				json.putOpt("custom_field4", JSONObject.NULL);
+			}
+		} else {
+			json.putOpt("custom_field4", JSONObject.NULL);
+		}
+		if (!this.config.getCustomField5().isEmpty()) {
+			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField5());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field5", value);
+			} else {
+				json.putOpt("custom_field5", JSONObject.NULL);
+			}
+		} else {
+			json.putOpt("custom_field5", JSONObject.NULL);
+		}
+		if (!this.config.getCustomField6().isEmpty()) {
+			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField6());
+			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
+			if (value != null) {
+				json.putOpt("custom_field6", value);
+			} else {
+				json.putOpt("custom_field6", JSONObject.NULL);
+			}
+		} else {
+			json.putOpt("custom_field6", JSONObject.NULL);
+		}
 		return json;
 	}
 	public List<JSONObject> getTransitions(Issue issue) throws JSONException {
