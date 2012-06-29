@@ -116,7 +116,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	public static String getServiceUrl() {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		if (pluginSettings.get("service_url") == null) {
-			return "https://sladiator.ebit.lv";
+			return "https://sladiator.com";
 		} else {
 			return pluginSettings.get("service_url").toString();
 		}
@@ -126,7 +126,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		pluginSettings.put("service_url",url);
 	}
 	public static String getSource() {
-		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v1.1.5";
+		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v1.1.6";
 	}
 	/**
 	 * Constructor.

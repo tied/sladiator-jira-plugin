@@ -5,8 +5,10 @@ import static java.lang.String.valueOf;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Date;
+import java.util.Map;
 
 import com.atlassian.crowd.embedded.api.User;
 import org.ofbiz.core.entity.GenericValue;
@@ -100,19 +102,31 @@ public class SladiatorCustomFieldNormalizer {
 	}
 	@SuppressWarnings("unchecked")
 	public static String getValue(CascadingSelectCFType type, CustomField customField, Issue issue) {
-		CustomFieldParams cp = transportValueOf(type, customField, issue);
-		if (cp != null) {
-			String depth = null;
+		SladiatorTransport.log.error("cc="+transportValueOf(type, customField, issue).getClass().getName());
+		if (transportValueOf(type, customField, issue).getClass().getName() == "java.util.HashMap") {
+			Map<String, Object> customfields = transportValueOf(type, customField, issue);
+			Iterator it = customfields.entrySet().iterator();
 			List<String> values = new ArrayList<String>();
-	        while (cp.containsKey(depth)) {
-	        	
-				Collection<Object> collection = cp.getValuesForKey(depth);
-	        	for (Object opt : collection) {
-	        		values.add(opt.toString());
-	            }
-	        	depth = valueOf(depth == null ? "1" : Integer.valueOf(depth) + 1);
-	        }
-	        return Joiner.on(" - ").skipNulls().join(values);
+			while (it.hasNext()) {
+				Map.Entry<String, Object> pairs = (Map.Entry<String, Object>)it.next();
+				values.add(pairs.getValue().toString());
+			}
+			return Joiner.on(" - ").skipNulls().join(values);
+		} else {
+			CustomFieldParams cp = transportValueOf(type, customField, issue);
+			if (cp != null) {
+				String depth = null;
+				List<String> values = new ArrayList<String>();
+		        while (cp.containsKey(depth)) {
+		        	
+					Collection<Object> collection = cp.getValuesForKey(depth);
+		        	for (Object opt : collection) {
+		        		values.add(opt.toString());
+		            }
+		        	depth = valueOf(depth == null ? "1" : Integer.valueOf(depth) + 1);
+		        }
+		        return Joiner.on(" - ").skipNulls().join(values);
+			}
 		}
 		return null;
 	}
