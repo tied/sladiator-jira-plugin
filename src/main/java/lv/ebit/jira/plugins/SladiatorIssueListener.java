@@ -127,7 +127,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		pluginSettings.put("service_url",url);
 	}
 	public static String getSource() {
-		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v1.1.6";
+		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v1.1.8";
 	}
 	/**
 	 * Constructor.
