@@ -151,8 +151,6 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	                  firstDay : 0,
 	                  inputField : 'date_from',
 	                  button : 'date_from-trigger',
-	                  align : 'Br',
-	                  singleClick : true,
 	                  useISO8601WeekNumbers : false,
 	                  ifFormat : '%e/%m/%Y'
 	                });
