@@ -24,7 +24,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	                <span class="aui-icon icon-required"></span>
 	                <span class="content">required</span>
 	              </label>
-	              <input class="text long-field" maxlength="50" name="sla_token" type="text" id="sla_token" value="$sla.getSlaToken()" />
+	              <input class="text long-field" maxlength="250" name="sla_token" type="text" id="sla_token" value="$sla.getSlaToken()" />
 	              <div class="description">Copy SLA token given in SLAdiator.com configuration page.</div>
 	            </div>
 	            <div class="field-group">
