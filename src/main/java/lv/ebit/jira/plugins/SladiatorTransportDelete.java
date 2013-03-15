@@ -24,7 +24,7 @@ public class SladiatorTransportDelete implements Runnable {
 		try {
 			DeleteMethod httpMethod = new DeleteMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + this.issueKey);
 			httpMethod.setRequestHeader("Content-Type", "application/json");
-			httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
+			httpMethod.setRequestHeader("X-SLA-Token", this.config.getSlaToken());
 
 			statusCode = client.executeMethod(httpMethod);
 		} catch (HttpException e) {

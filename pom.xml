@@ -72,6 +72,7 @@
 				<configuration>
 					<productVersion>${jira.version}</productVersion>
 					<productDataVersion>${jira.data.version}</productDataVersion>
+					<!--  -jvmargs '-Xmx512m -XX:MaxPermSize=256m'-  -->
 					<pluginArtifacts>
 						<pluginArtifact>
 							<groupId>com.atlassian.upm</groupId>
@@ -92,8 +93,8 @@
 	</build>
 
 	<properties>
-		<jira.version>5.1.2</jira.version>
-		<jira.data.version>5.1</jira.data.version>
+		<jira.version>5.2.5</jira.version>
+		<jira.data.version>5.2</jira.data.version>
 		<amps.version>3.7.3</amps.version>
 	</properties>
 
