@@ -278,7 +278,7 @@ public class SladiatorTransport implements Runnable {
 		int statusCode = 0;
 		String status = "";
 		GetMethod httpMethod = new GetMethod(url+"/api/ping");
-		httpMethod.setRequestHeader("SLA_TOKEN", token);
+		httpMethod.setRequestHeader("X-SLA-Token", token);
 		try {
 			statusCode = client.executeMethod(httpMethod);
 		} catch (Exception e) {
@@ -302,14 +302,14 @@ public class SladiatorTransport implements Runnable {
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID)) {
 				PostMethod httpMethod = new PostMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/");
 				httpMethod.setRequestHeader("Content-Type", "application/json");
-				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
+				httpMethod.setRequestHeader("X-SLA-Token", this.config.getSlaToken());
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
 				statusCode = client.executeMethod(httpMethod);
 			} else {
 				PutMethod httpMethod = new PutMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
 				httpMethod.setRequestHeader("Content-Type", "application/json");
-				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
+				httpMethod.setRequestHeader("X-SLA-Token", this.config.getSlaToken());
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
 				statusCode = client.executeMethod(httpMethod);
