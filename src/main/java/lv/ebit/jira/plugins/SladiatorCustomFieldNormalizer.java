@@ -104,7 +104,7 @@ public class SladiatorCustomFieldNormalizer {
 	public static String getValue(CascadingSelectCFType type, CustomField customField, Issue issue) {
 		SladiatorTransport.log.error("cc="+transportValueOf(type, customField, issue).getClass().getName());
 		if (transportValueOf(type, customField, issue).getClass().getName() == "java.util.HashMap") {
-			Map<String, Object> customfields = transportValueOf(type, customField, issue);
+			Map<Object, Object> customfields = transportValueOf(type, customField, issue);
 			Iterator it = customfields.entrySet().iterator();
 			List<String> values = new ArrayList<String>();
 			while (it.hasNext()) {

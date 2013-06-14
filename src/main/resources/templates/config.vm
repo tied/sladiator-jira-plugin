@@ -139,18 +139,29 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	          <input type="hidden" name="project" value="$projectId"/>
 	          <div class="warningBox" style="display:none;"></div>
 	          <div class="infoBox" style="display:none;"></div>
-	          <div class="field-group">
+	          <div class="field-group aui-field-datepicker">
 	            <label for="teleport_date_from">Starting from</label> 
 	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="date_from" />
 	            <a href="#" id="date_from-trigger" title="Select a date">
 	              <span class="aui-icon icon-date">Select a date</span>
 	            </a>
+	            <fieldset class="hidden datepicker-params">
+                <input title="firstDay" type="hidden" value="0" />
+                <input title="inputField" type="hidden" value="date_from" />
+                <input title="button" type="hidden" value="duedate-trigger" />
+                <input title="align" type="hidden" value="Br" />
+                <input title="singleClick" type="hidden" value="true" />
+                <input title="useISO8601WeekNumbers" type="hidden" value="false" />
+                <input title="ifFormat" type="hidden" value="%e/%m/%Y" />
+	            </fieldset>
 	            <div class="description">Date from which tickets needs to be sent to SLAdiator.</div>
 	            <script type="text/javascript">
 	                Calendar.setup({
 	                  firstDay : 0,
 	                  inputField : 'date_from',
 	                  button : 'date_from-trigger',
+	                  align: 'Br',
+	                  singleClick: true,
 	                  useISO8601WeekNumbers : false,
 	                  ifFormat : '%e/%m/%Y'
 	                });

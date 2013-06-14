@@ -132,7 +132,7 @@ public class SladiatorRestResource {
 		if (errors.isEmpty()) {
 			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
 			job.run();
-			String success = job.getTotalProcessed() + " issues sent to RealSLA";
+			String success = job.getTotalProcessed() + " issues sent to SLAdiator";
 			return Response.ok(success).build();
 		} else {
 			return Response.serverError().entity(errors).build();

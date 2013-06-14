@@ -3,6 +3,7 @@
     <title>SLAdiator global configuration</title>
     <meta name="decorator" content="atl.admin" />
     <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
+    $webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
     $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:admin_assets")
   </head>
   <body>
