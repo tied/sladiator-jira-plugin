@@ -36,6 +36,8 @@ import com.atlassian.jira.project.DefaultProjectManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.PermissionManager;
 
+import com.atlassian.jira.component.ComponentAccessor;
+
 
 @Path("/")
 public class SladiatorRestResource {
@@ -130,7 +132,7 @@ public class SladiatorRestResource {
 			errors = errors + " "+status;
 		}
 		if (errors.isEmpty()) {
-			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
+			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
 			job.run();
 			String success = job.getTotalProcessed() + " issues sent to SLAdiator";
 			return Response.ok(success).build();
@@ -162,7 +164,7 @@ public class SladiatorRestResource {
 		if (status.isEmpty()) {
 			
 			ArrayList<String> keys = SladiatorIssueListener.getFailedIssues(janitor.project);
-			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, new DefaultProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLeadUser());
+			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLeadUser());
 			job.run();
 			return Response.ok().build();
 		} else {
@@ -225,7 +227,7 @@ public class SladiatorRestResource {
 		private String service_url;
 	}
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
-		Project project = new DefaultProjectManager().getProjectObj(Long.valueOf(projectId));
+		Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId));
 		PermissionManager permissionManager = ComponentManager.getInstance().getPermissionManager();
 		com.atlassian.crowd.embedded.api.User user = (User) userManager.resolve(userManager.getRemoteUsername(request));
 		

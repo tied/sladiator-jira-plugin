@@ -91,7 +91,7 @@
 	</build>
 
 	<properties>
-		<jira.version>6.0.2</jira.version>
+		<jira.version>6.1</jira.version>
 		<amps.version>4.2.1</amps.version>
 	</properties>
 
