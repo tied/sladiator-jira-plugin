@@ -119,9 +119,9 @@ public class SladiatorCustomFieldNormalizer {
 				List<String> values = new ArrayList<String>();
 		        while (cp.containsKey(depth)) {
 		        	
-					Collection<Object> collection = cp.getValuesForKey(depth);
-		        	for (Object opt : collection) {
-		        		values.add(opt.toString());
+					Collection<String> collection = cp.getValuesForKey(depth);
+		        	for (String opt : collection) {
+		        		values.add(opt);
 		            }
 		        	depth = valueOf(depth == null ? "1" : Integer.valueOf(depth) + 1);
 		        }
