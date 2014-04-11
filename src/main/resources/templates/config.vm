@@ -32,7 +32,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
                  <input class="checkbox " name="send_assignee" type="checkbox" value="1" id="send_assignee" $sla.checkedSendAssignee()>
               </div>
               <fieldset>
-                <legend>Include custom fields if you need them for SLA</legend>
+                <legend style="margin:0px;padding:0px;text-align: left;font-weight: bold;float:none;">Include custom fields if you need them for SLA</legend>
                 <div class="field-group">
                   <label for="custom_field1">Custom field 1</label>
                    <select name="custom_field1" id="custom_field1">

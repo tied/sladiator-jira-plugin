@@ -1,26 +1,25 @@
 AJS.toInit(function() {
-  
   var baseUrl = AJS.$("#baseURL").val();
   var serviceUrl = AJS.$("#serviceURL").val();
   var indicator = new JIRA.Dialog();
-  
+
   function startProgress() {
     AJS.$("#freezer").show();
     indicator._showloadingIndicator();
   }
-  
+
   function stopProgress() {
     AJS.$("#freezer").hide();
     indicator._hideloadingIndicator();
   }
-  
+
   function formToJSON(form)
   {
     return "{"+AJS.$(form).serializeArray().map(function(i){return '"'+i.name+'":'+'"'+escape(i.value)+'"'}).join(",")+"}";
   };
-  
+
   function maintainSLA() {
-    jQuery.fn.isDirty = function () {return false;}
+    AJS.$.isDirty = function () {return false;}
     AJS.$.ajax({
       url : baseUrl + "/rest/sladiator/1.0/config",
       type : "POST",
@@ -41,16 +40,16 @@ AJS.toInit(function() {
       }
     });
   }
-  
+
   function visitSLA() {
     token = AJS.$("#sla_token").val();
     if ( token != "") {
       window.open(serviceUrl+"/sla_token/"+ token);
     }
   }
-  
+
   function teleportSLA() {
-    jQuery.fn.isDirty = function () {return false;}
+    AJS.$.isDirty = function () {return false;}
     AJS.$.ajax({
       url : baseUrl + "/rest/sladiator/1.0/teleport",
       type : "POST",
@@ -72,7 +71,7 @@ AJS.toInit(function() {
     });
   }
   function janitorSLA() {
-    jQuery.fn.isDirty = function () {return false;}
+    AJS.$.isDirty = function () {return false;}
     AJS.$.ajax({
       url : baseUrl + "/rest/sladiator/1.0/janitor",
       type : "POST",
@@ -92,7 +91,7 @@ AJS.toInit(function() {
     });
   }
   function deleteSLA() {
-    jQuery.fn.isDirty = function () {return false;}
+    AJS.$.isDirty = function () {return false;}
     var answer = confirm("Please confirm that you wish to delete SLAdiator configuration for your project!");
     if (answer) {
       AJS.$.ajax({
@@ -106,24 +105,24 @@ AJS.toInit(function() {
       });
     }
   }
-  AJS.$("#saveSLA").click(function(e) {
+  AJS.$(document).on("simpleClick", "#saveSLA",function(e) {
     e.preventDefault();
     maintainSLA();
   });
-  AJS.$("#visitSLA").click(function(e) {
+  AJS.$(document).on("simpleClick", "#visitSLA",function(e) {
     e.preventDefault();
     visitSLA();
   });
-  
-  AJS.$("#teleportSLA").click(function(e) {
+
+  AJS.$(document).on("simpleClick", "#teleportSLA",function(e) {
     e.preventDefault();
     teleportSLA();
   });
-  AJS.$("#janitorSLA").click(function(e) {
+  AJS.$(document).on('simpleClick',"#janitorSLA",function(e) {
     e.preventDefault();
     janitorSLA();
   });
-  AJS.$("#deleteSLA").click(function(e) {
+  AJS.$(document).on('simpleClick',"#deleteSLA",function(e) {
     e.preventDefault();
     deleteSLA();
   });
