@@ -126,4 +126,6 @@ AJS.toInit(function() {
     e.preventDefault();
     deleteSLA();
   });
+
+    AJS.$('#sladiator-project').data('loaded','loaded');
 });

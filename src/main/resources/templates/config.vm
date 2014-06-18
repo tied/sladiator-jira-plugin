@@ -14,7 +14,7 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	        <h3>SLAdiator configuration</h3>
 	      </div>
 	      <div class="mod-content">
-	        <form class="aui" action="#" method="post" id="sladiator-project">
+	        <form class="aui" action="#" method="post" id="sladiator-project" data-loaded="">
 	          <input type="hidden" name="project" value="$projectId"/>
 	          <div class="warningBox" style="display:none;"></div>
 	          <div class="infoBox" style="display:none;"></div>
@@ -201,3 +201,10 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	</div>
 	
 </div>
+
+<script>
+    AJS.$(document).ready(function(){
+        if(AJS.$('#sladiator-project').data('loaded') != 'loaded')
+            window.location.reload();
+        });
+</script>
