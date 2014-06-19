@@ -1,6 +1,4 @@
-$webResourceManager.requireResource("jira.webresources:calendar")
 $webResourceManager.requireResource("jira.webresources:calendar-en")
-$webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 <div class="column full" id="primary">
 	<div class="content">
 		<p>SLAdiator is monitoring your ticket workflow, calculates spent
@@ -202,9 +200,5 @@ $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
 	
 </div>
 
-<script>
-    AJS.$(document).ready(function(){
-        if(AJS.$('#sladiator-project').data('loaded') != 'loaded')
-            window.location.reload();
-        });
-</script>
+<script type="text/javascript" src="$req.contextPath/download/resources/lv.ebit.jira.plugins.sladiator:assets/sladiator.js"></script>
+<link type="text/css" href="$req.contextPath/download/resources/lv.ebit.jira.plugins.sladiator:assets/sladiator.css" rel="stylesheet" />
