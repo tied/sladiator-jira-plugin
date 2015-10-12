@@ -45,12 +45,16 @@
       <dependency>com.atlassian.auiplugin:ajs</dependency> 
       <resource type="download" name="sladiator.js" location="javascripts/sladiator.js"/>
       <resource type="download" name="sladiator.css" location="stylesheets/sladiator.css"/>
+      <context>atl.general</context>
+      <context>atl.admin</context>
   </web-resource>
   
   <web-resource name="SLAdiator admin assets" key="admin_assets"> 
       <dependency>com.atlassian.auiplugin:ajs</dependency> 
       <resource type="download" name="sladiator.js" location="javascripts/admin_sladiator.js"/>
       <resource type="download" name="sladiator.css" location="stylesheets/admin_sladiator.css"/>
+      <context>atl.general</context>
+      <context>atl.admin</context>
   </web-resource>
   
   <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"
