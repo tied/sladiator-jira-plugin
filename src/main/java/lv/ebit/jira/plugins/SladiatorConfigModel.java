@@ -161,10 +161,10 @@ public final class SladiatorConfigModel {
 	
 	public boolean isValid() {
 		this.errors = new ArrayList<String>();
-		if (this.getSlaToken().isEmpty()) {
+		if(this.getSlaToken().isEmpty()) {
 			this.errors.add("SLA token is required");
 		}
-		if (this.getProject().toString().isEmpty()) {
+		if(this.getProject() != null && this.getProject().toString().isEmpty()) {
 			this.errors.add("Project is required");
 		}
 		return this.errors.isEmpty();

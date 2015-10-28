@@ -32,10 +32,11 @@ import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.issue.search.SearchProvider;
+import com.atlassian.jira.permission.GlobalPermissionKey;
 import com.atlassian.jira.project.DefaultProjectManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.PermissionManager;
-
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.component.ComponentAccessor;
 
 
@@ -188,7 +189,7 @@ public class SladiatorRestResource {
 		if (!isAdmin(request)) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
-		if (config.service_url.isEmpty()) {
+		if (config.service_url.isEmpty() || config.service_url.equals("undefined")) {
 			return Response.serverError().entity("URL is not present").build();
 		} else {
 			SladiatorIssueListener.setServiceUrl(config.service_url);
@@ -227,14 +228,22 @@ public class SladiatorRestResource {
 		private String service_url;
 	}
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
-		Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId));
-		PermissionManager permissionManager = ComponentManager.getInstance().getPermissionManager();
-		com.atlassian.crowd.embedded.api.User user = (User) userManager.resolve(userManager.getRemoteUsername(request));
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(userManager.getRemoteUsername(request));
 		
-		if (project.getLeadUser().getName() == user.getName() || permissionManager.hasPermission(23, project, user)) {
-			return true;
+		if(projectId != null) {
+			Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId)); 
+			if (project.getLeadUserKey().equals(user.getKey()) || ComponentAccessor.getPermissionManager().hasPermission(23, project, user)) { // 23 - project admin
+				return true;
+			}
+			return false;
+		} else { // Probably configuring the sladiator url then. 
+			
+			if (ComponentAccessor.getGlobalPermissionManager().hasPermission(GlobalPermissionKey.ADMINISTER, user)) {
+				return true;
+			}
+			return false;
+			
 		}
-		return false;
 	}
 	
 	private boolean isAdmin(HttpServletRequest request) {

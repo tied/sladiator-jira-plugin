@@ -115,10 +115,11 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 	
 	public static String getServiceUrl() {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
-		if (pluginSettings.get("service_url") == null) {
+		String service_url = (String) pluginSettings.get("service_url");
+		if (service_url == null || service_url.equals("undefined")) {
 			return "https://sladiator.com";
 		} else {
-			return pluginSettings.get("service_url").toString();
+			return service_url;
 		}
 	}
 	public static void setServiceUrl(String url) {
