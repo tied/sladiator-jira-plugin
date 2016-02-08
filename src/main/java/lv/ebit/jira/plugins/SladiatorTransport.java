@@ -23,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.core.ofbiz.CoreFactory;
-import com.atlassian.crowd.embedded.api.User;
-import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.bc.project.component.ProjectComponent;
@@ -37,6 +35,7 @@ import com.atlassian.jira.issue.label.Label;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.collect.MapBuilder;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
@@ -92,16 +91,16 @@ public class SladiatorTransport implements Runnable {
 		} else {
 			json.putOpt("due_date", JSONObject.NULL);
 		}
-		if (issue.getPriorityObject() != null) {
-			json.putOpt("priority", issue.getPriorityObject().getName());
+		if (issue.getPriority() != null) {
+			json.putOpt("priority", issue.getPriority().getName());
 		}
-		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
-		json.putOpt("status", issue.getStatusObject().getName());
+		json.putOpt("issue_type", issue.getIssueType().getName());
+		json.putOpt("status", issue.getStatus().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
 		json.putOpt("url", jiraUrl+"/browse/" + issue.getKey());
 		List<HashMap<String,String>> links = new ArrayList<HashMap<String,String>>();
 		
-		Iterator<IssueLink> link = ComponentManager.getInstance().getIssueLinkManager().getInwardLinks(issue.getId()).iterator();
+		Iterator<IssueLink> link = ComponentAccessor.getIssueLinkManager().getInwardLinks(issue.getId()).iterator();
 		while (link.hasNext()) {
 			IssueLink currentLink = link.next();
 			HashMap<String, String> map = new HashMap<String, String>();
@@ -109,7 +108,7 @@ public class SladiatorTransport implements Runnable {
 			map.put("link",currentLink.getIssueLinkType().getInward());
 			links.add(map);
 		}
-		link = ComponentManager.getInstance().getIssueLinkManager().getOutwardLinks(issue.getId()).iterator();
+		link = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId()).iterator();
 		while (link.hasNext()) {
 			IssueLink currentLink = link.next();
 			HashMap<String, String> map = new HashMap<String, String>();
@@ -126,7 +125,7 @@ public class SladiatorTransport implements Runnable {
 		}
 		json.putOpt("labels", labels);
 		
-		Iterator<ProjectComponent> component = issue.getComponentObjects().iterator();
+		Iterator<ProjectComponent> component = issue.getComponents().iterator();
 		List<String> components = new ArrayList<String>();
 		while (component.hasNext()) {
 			components.add(component.next().getName());
@@ -134,17 +133,17 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("components", components);
 		
 		if (collectAssignee) {
-			User assignee = issue.getAssigneeUser();
+			ApplicationUser assignee = issue.getAssigneeUser();
 			if (assignee != null) {
 				json.putOpt("assignee", assignee.getDisplayName());
 				json.putOpt("assignee_email", assignee.getEmailAddress());
 				URI jira_uri = URI.create(jiraUrl);
-				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE)));
+				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee, Avatar.Size.LARGE)));
 			}
 		}
 
-		if (issue.getResolutionObject() != null) {
-			json.putOpt("resolution", issue.getResolutionObject().getName());
+		if (issue.getResolution() != null) {
+			json.putOpt("resolution", issue.getResolution().getName());
 			json.putOpt("resolution_date", this.dateFormat.format(issue.getResolutionDate()));
 //			json.putOpt("resolution_date", issue.getResolutionDate());
 		} else {
@@ -153,7 +152,7 @@ public class SladiatorTransport implements Runnable {
 		}
 		json.putOpt("transitions", getTransitions(issue));
 		
-		CustomFieldManager customFieldManager = ComponentManager.getInstance().getCustomFieldManager();
+		CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager();
 		
 		if (!this.config.getCustomField1().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField1());
@@ -255,8 +254,8 @@ public class SladiatorTransport implements Runnable {
 //				json.put("entered_at", entered_at);
 				json.put("exited_at", this.dateFormat.format(changeGroup.getTimestamp("created")));
 //				json.put("exited_at", changeGroup.getTimestamp("created"));
-				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
-				json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
+				json.put("status_to", ComponentAccessor.getConstantsManager().getStatus(changeItem.getString("newvalue")).getName());
+				json.put("status", ComponentAccessor.getConstantsManager().getStatus(changeItem.getString("oldvalue")).getName());
 				retList.add(json);
 				entered_at = changeGroup.getTimestamp("created");
 				// Deprecated. Use ComponentAccessor instead. Since v4.4.
@@ -268,7 +267,7 @@ public class SladiatorTransport implements Runnable {
 		JSONObject json = new JSONObject();
 		json.put("entered_at", this.dateFormat.format(entered_at));
 //		json.put("entered_at", entered_at);
-		json.put("status", issue.getStatusObject().getName());
+		json.put("status", issue.getStatus().getName());
 		retList.add(json);
 		
 		return retList;

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>lv.ebit.jira.plugins</groupId>
     <artifactId>sladiator</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.0</version>
     <organization>
         <name>eBIT SIA</name>
         <url>https://sladiator.com</url>
@@ -25,6 +25,12 @@
             <version>${jira.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+		    <groupId>com.atlassian.jira</groupId>
+		    <artifactId>jira-projects-api</artifactId>
+		    <version>4.0.12</version>
+		    <scope>provided</scope>
+		</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -90,7 +96,7 @@
         </plugins>
     </build>
     <properties>
-        <jira.version>6.4</jira.version>
+        <jira.version>7.0.2</jira.version>
         <amps.version>5.1.16</amps.version>
     </properties>
 </project>

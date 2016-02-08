@@ -3,8 +3,6 @@ package lv.ebit.jira.plugins;
 import java.util.ArrayList;
 import java.util.List;
 
-
-import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
@@ -12,6 +10,7 @@ import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
@@ -20,10 +19,10 @@ public class SladiatorJanitor {
 	private final AvatarService avatarService;
 	private SladiatorConfigModel config;
 	private String jiraUrl;
-	private User user;
+	private ApplicationUser user;
 	private ArrayList<String> keys;
 	
-	public SladiatorJanitor(SladiatorConfigModel config, String jiraUrl, ArrayList<String> keys, SearchProvider searchProvider, AvatarService avatarService, User user){
+	public SladiatorJanitor(SladiatorConfigModel config, String jiraUrl, ArrayList<String> keys, SearchProvider searchProvider, AvatarService avatarService, ApplicationUser user){
 		this.config = config;
 		this.jiraUrl = jiraUrl;
 		this.searchProvider = searchProvider;

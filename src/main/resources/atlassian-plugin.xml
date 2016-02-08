@@ -19,7 +19,7 @@
   <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />
   <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider" />
   
-	<project-tabpanel key="panel" name="SLAdiator Project Tab"
+	<!-- <project-tabpanel key="panel" name="SLAdiator Project Tab"
 		class="lv.ebit.jira.plugins.SladiatorProjectTab">
 		<description>
 			Adds SLAdiator configuration page for project.
@@ -28,7 +28,23 @@
 		<order>50</order>
 		<resource type="velocity" name="config" location="templates/config.vm" />
 		<param name="noTitle">true</param>
-	</project-tabpanel>
+	</project-tabpanel> -->
+	
+  <web-item key="slad-panel" i18n-name-key="slad-panel" section="jira.project.sidebar.plugins.navigation" weight="450">
+    <label key="SLAdiator"/>
+    <link>/projects/$pathEncodedProjectKey?selectedItem=${project.groupId}.${project.artifactId}:slad-panel</link>
+    <!-- <param name="iconClass" value="aui-icon-large icon-sidebar-release"/> -->
+    <condition class="lv.ebit.jira.plugins.SladiatorProjectTabViewCondition"/>
+  </web-item>
+  
+  <web-panel key="slad-panel-key" location="${project.groupId}.${project.artifactId}:slad-panel">
+    <!-- <resource name="view" type="soy" location=":project-subpages-soy/JIRA.Projects.Release.Templates.page"/> -->
+    <resource type="velocity" name="view" location="templates/config.vm" />
+    <context-provider class="lv.ebit.jira.plugins.SladiatorProjectTab"/>
+    <condition class="lv.ebit.jira.plugins.SladiatorProjectTabViewCondition"/>
+  </web-panel>
+  
+  
   
   <component key="issue-listener" class="lv.ebit.jira.plugins.SladiatorIssueListener">
     <description>Monitor the incoming JIRA issue events.</description>
@@ -43,7 +59,7 @@
       <description>SLAdiator Admin configuration GUI</description>
   </servlet>
   
-  <web-resource name="SLAdiator assets" key="assets"> 
+  <web-resource name="SLAdiator assets" key="assets-v100"> 
       <dependency>com.atlassian.auiplugin:ajs</dependency> 
       <resource type="download" name="sladiator.js" location="javascripts/sladiator.js"/>
       <resource type="download" name="sladiator.css" location="stylesheets/sladiator.css"/>
@@ -51,7 +67,7 @@
       <context>atl.admin</context>
   </web-resource>
   
-  <web-resource name="SLAdiator admin assets" key="admin_assets"> 
+  <web-resource name="SLAdiator admin assets" key="admin_assets-v100"> 
       <dependency>com.atlassian.auiplugin:ajs</dependency> 
       <resource type="download" name="sladiator.js" location="javascripts/admin_sladiator.js"/>
       <resource type="download" name="sladiator.css" location="stylesheets/admin_sladiator.css"/>

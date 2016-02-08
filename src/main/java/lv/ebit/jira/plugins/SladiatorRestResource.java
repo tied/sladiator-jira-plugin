@@ -22,22 +22,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.atlassian.jira.avatar.AvatarService;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.search.SearchProvider;
+import com.atlassian.jira.permission.GlobalPermissionKey;
+import com.atlassian.jira.project.Project;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.crowd.embedded.api.User;
-import com.atlassian.jira.ComponentManager;
-import com.atlassian.jira.avatar.AvatarService;
-import com.atlassian.jira.issue.search.SearchProvider;
-import com.atlassian.jira.permission.GlobalPermissionKey;
-import com.atlassian.jira.project.DefaultProjectManager;
-import com.atlassian.jira.project.Project;
-import com.atlassian.jira.security.PermissionManager;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.component.ComponentAccessor;
 
 
 @Path("/")
@@ -133,7 +129,7 @@ public class SladiatorRestResource {
 			errors = errors + " "+status;
 		}
 		if (errors.isEmpty()) {
-			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
+			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(teleport.project)).getProjectLead());
 			job.run();
 			String success = job.getTotalProcessed() + " issues sent to SLAdiator";
 			return Response.ok(success).build();
@@ -165,7 +161,10 @@ public class SladiatorRestResource {
 		if (status.isEmpty()) {
 			
 			ArrayList<String> keys = SladiatorIssueListener.getFailedIssues(janitor.project);
-			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLeadUser());
+			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, 
+										this.avatarService, 
+										ComponentAccessor.getProjectManager()
+										.getProjectObj(Long.valueOf(janitor.project)).getProjectLead());
 			job.run();
 			return Response.ok().build();
 		} else {

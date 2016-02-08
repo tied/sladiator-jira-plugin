@@ -12,7 +12,7 @@ AJS.toInit(function() {
     indicator._hideloadingIndicator();
   }
   
-  function saveConfig() {
+  function admSaveConfig() {
     jQuery.fn.isDirty = function () {return false;}
     AJS.$.ajax({
       url : baseUrl + "/rest/sladiator/1.0/admin",
@@ -35,7 +35,7 @@ AJS.toInit(function() {
     });
   }
   
-  function testConfig() {
+  function admTestConfig() {
     jQuery.fn.isDirty = function () {return false;}
     AJS.$.ajax({
       url : baseUrl + "/rest/sladiator/1.0/test_service",
@@ -58,20 +58,20 @@ AJS.toInit(function() {
     });
   }
   
-  function visitSLA() {
+  function admVisitSLA() {
     window.open(AJS.$("#service_url").val());
   }
   
-  AJS.$("#saveSLA").click(function(e) {
+  AJS.$("#adm_saveSLA").click(function(e) {
     e.preventDefault();
-    saveConfig();
+    admSaveConfig();
   });
-  AJS.$("#testSLA").click(function(e) {
+  AJS.$("#adm_testSLA").click(function(e) {
     e.preventDefault();
-    testConfig();
+    admTestConfig();
   });
-  AJS.$("#visitSLA").click(function(e) {
+  AJS.$("#adm_visitSLA").click(function(e) {
     e.preventDefault();
-    visitSLA();
+    admVisitSLA();
   });
 });

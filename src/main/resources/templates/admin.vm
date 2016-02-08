@@ -31,9 +31,9 @@
              </fieldset>
              <div class="buttons-container content-footer">
               <div class="buttons">
-                 <input type="submit" name="save" id="saveSLA" value="Save" accesskey="s" class="button spaced " />
-                 <input type="button" name="test" id="testSLA" value="Test connection" class="button spaced " />
-                 <input type="button" name="visit" id="visitSLA" value="Visit SLA configuration in SLAdiator" class="button spaced " />
+                 <input type="submit" name="save" id="adm_saveSLA" value="Save" accesskey="s" class="button spaced " />
+                 <input type="button" name="test" id="adm_testSLA" value="Test connection" class="button spaced " />
+                 <input type="button" name="visit" id="adm_visitSLA" value="Visit SLA configuration in SLAdiator" class="button spaced " />
               </div>
             </div>
           </form>
