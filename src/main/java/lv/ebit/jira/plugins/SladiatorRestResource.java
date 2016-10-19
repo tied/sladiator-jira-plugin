@@ -26,6 +26,7 @@ import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.permission.GlobalPermissionKey;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.ApplicationProperties;
@@ -231,7 +232,7 @@ public class SladiatorRestResource {
 		
 		if(projectId != null) {
 			Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId)); 
-			if (project.getLeadUserKey().equals(user.getKey()) || ComponentAccessor.getPermissionManager().hasPermission(23, project, user)) { // 23 - project admin
+			if (project.getLeadUserKey().equals(user.getKey()) || ComponentAccessor.getPermissionManager().hasPermission(ProjectPermissions.ADMINISTER_PROJECTS, project, user)) { // 23 - project admin
 				return true;
 			}
 			return false;

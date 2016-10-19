@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>lv.ebit.jira.plugins</groupId>
     <artifactId>sladiator</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <organization>
         <name>eBIT SIA</name>
         <url>https://sladiator.com</url>
@@ -96,7 +96,7 @@
         </plugins>
     </build>
     <properties>
-        <jira.version>7.0.2</jira.version>
-        <amps.version>5.1.16</amps.version>
+        <jira.version>7.2.2</jira.version>
+        <amps.version>6.2.1</amps.version>
     </properties>
 </project>

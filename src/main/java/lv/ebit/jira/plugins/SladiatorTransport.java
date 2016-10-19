@@ -225,7 +225,7 @@ public class SladiatorTransport implements Runnable {
 		return json;
 	}
 	public List<JSONObject> getTransitions(Issue issue) throws JSONException {
-		OfBizDelegator delegator = new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
+		OfBizDelegator delegator = ComponentAccessor.getOfBizDelegator();//new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
 		Map<String, Long> params = MapBuilder.build("issue", issue.getId());
 		List<GenericValue> changeGroups = delegator.findByAnd("ChangeGroup", params);
 		

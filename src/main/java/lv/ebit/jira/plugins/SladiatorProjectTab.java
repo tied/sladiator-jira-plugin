@@ -17,7 +17,7 @@ import com.atlassian.jira.plugin.webfragment.conditions.AbstractWebCondition;
 import com.atlassian.jira.plugin.webfragment.model.JiraHelper;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.browse.BrowseContext;
-import com.atlassian.jira.projects.api.sidebar.ProjectScopeFilterContextProvider;
+//import com.atlassian.jira.projects.api.sidebar.ProjectScopeFilterContextProvider;
 import com.atlassian.jira.security.PermissionManager;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.plugin.PluginParseException;
