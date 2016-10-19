@@ -14,6 +14,7 @@ import com.atlassian.core.ofbiz.CoreFactory;
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.avatar.AvatarService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
@@ -43,7 +44,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 		
 		if (eventTypeId == EventType.ISSUE_MOVED_ID) {
-			OfBizDelegator delegator = new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
+			OfBizDelegator delegator = ComponentAccessor.getOfBizDelegator();//new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
 			String oldProjectId = "";
 			
 			Map<String, Object> paramsItem = new HashMap<String, Object>();

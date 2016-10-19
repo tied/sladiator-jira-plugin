@@ -3,7 +3,6 @@ package lv.ebit.jira.plugins;
 import java.util.Date;
 import java.util.List;
 
-import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
@@ -11,6 +10,7 @@ import com.atlassian.jira.issue.search.SearchException;
 import com.atlassian.jira.issue.search.SearchProvider;
 import com.atlassian.jira.issue.search.SearchResults;
 import com.atlassian.jira.jql.builder.JqlQueryBuilder;
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.web.bean.PagerFilter;
 import com.atlassian.query.Query;
 
@@ -20,10 +20,10 @@ public class SladiatorTeleport {
 	private SladiatorConfigModel config;
 	private String jiraUrl;
 	private Long total;
-	private User user;
+	private ApplicationUser user;
 	private Date dateFrom;
 	
-	public SladiatorTeleport(SladiatorConfigModel config, String jiraUrl, Date dateFrom, SearchProvider searchProvider, AvatarService avatarService, User user) {
+	public SladiatorTeleport(SladiatorConfigModel config, String jiraUrl, Date dateFrom, SearchProvider searchProvider, AvatarService avatarService, ApplicationUser user) {
 		this.config = config;
 		this.dateFrom = dateFrom;
 		this.jiraUrl = jiraUrl;

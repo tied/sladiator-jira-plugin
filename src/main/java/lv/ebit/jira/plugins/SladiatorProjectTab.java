@@ -7,15 +7,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.issue.issuetype.IssueType;
+import com.atlassian.jira.issue.util.IssueImplAggregateTimeTrackingCalculator.PermissionChecker;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.plugin.projectpanel.impl.AbstractProjectTabPanel;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.browse.BrowseContext;
 import com.atlassian.jira.security.PermissionManager;
+import com.atlassian.jira.security.plugin.ProjectPermissionKey;
 import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
@@ -69,12 +71,13 @@ public class SladiatorProjectTab extends AbstractProjectTabPanel {
 	@Override
 	public boolean showPanel(BrowseContext browseContext) {
 		this.project = browseContext.getProject();
-		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getUser();
+		ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser();
 
         PermissionManager permissionManager = ComponentAccessor.getPermissionManager();
         
-		this.isProjectLead = (project.getLeadUserName() == user.getName() || permissionManager.hasPermission(23, this.project, user, false));
-		return this.isProjectLead;
+		//this.isProjectLead = (project.getLeadUserName().equals(user.getName()) || permissionManager.hasPermission(23, this.project, user, false));
+        this.isProjectLead = (project.getLeadUserName().equals(user.getName()) || permissionManager.hasPermission(ProjectPermissions.ADMINISTER_PROJECTS, this.project, user, false));
+        return this.isProjectLead;
 	}
 
 }

@@ -28,14 +28,12 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.crowd.embedded.api.User;
-import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.issue.search.SearchProvider;
-import com.atlassian.jira.project.DefaultProjectManager;
+import com.atlassian.jira.permission.ProjectPermissions;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.PermissionManager;
-
+import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.component.ComponentAccessor;
 
 
@@ -132,7 +130,7 @@ public class SladiatorRestResource {
 			errors = errors + " "+status;
 		}
 		if (errors.isEmpty()) {
-			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(teleport.project)).getLeadUser());
+			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(teleport.project)).getProjectLead());
 			job.run();
 			String success = job.getTotalProcessed() + " issues sent to SLAdiator";
 			return Response.ok(success).build();
@@ -164,7 +162,7 @@ public class SladiatorRestResource {
 		if (status.isEmpty()) {
 			
 			ArrayList<String> keys = SladiatorIssueListener.getFailedIssues(janitor.project);
-			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(janitor.project)).getLeadUser());
+			SladiatorJanitor job = new SladiatorJanitor(config, this.jiraUrl, keys, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(janitor.project)).getProjectLead());
 			job.run();
 			return Response.ok().build();
 		} else {
@@ -228,10 +226,12 @@ public class SladiatorRestResource {
 	}
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
 		Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId));
-		PermissionManager permissionManager = ComponentManager.getInstance().getPermissionManager();
-		com.atlassian.crowd.embedded.api.User user = (User) userManager.resolve(userManager.getRemoteUsername(request));
+		PermissionManager permissionManager = ComponentAccessor.getPermissionManager();
+		//com.atlassian.crowd.embedded.api.User user = (User) userManager.resolve(userManager.getRemoteUsername(request));
+		com.atlassian.jira.user.util.UserManager users = ComponentAccessor.getUserManager();
+		ApplicationUser user = users.getUserByName(userManager.getRemoteUsername(request));
 		
-		if (project.getLeadUser().getName() == user.getName() || permissionManager.hasPermission(23, project, user)) {
+		if (user != null && project.getLeadUserName().equals(user.getName()) || permissionManager.hasPermission(ProjectPermissions.ADMINISTER_PROJECTS, project, user)) {
 			return true;
 		}
 		return false;
