@@ -2,24 +2,17 @@ package lv.ebit.jira.plugins;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.ofbiz.core.entity.GenericValue;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.atlassian.core.ofbiz.CoreFactory;
 import com.atlassian.event.api.EventListener;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.jira.avatar.AvatarService;
-import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.event.type.EventType;
+//import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
-import com.atlassian.jira.ofbiz.OfBizDelegator;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -40,49 +33,14 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		//https://jira.atlassian.com/browse/JRA-8505
 		Long eventTypeId = issueEvent.getEventTypeId();
 		Issue issue = issueEvent.getIssue();
-		
-		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
-		
-		if (eventTypeId == EventType.ISSUE_MOVED_ID) {
-			OfBizDelegator delegator = ComponentAccessor.getOfBizDelegator();//new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
-			String oldProjectId = "";
-			
-			Map<String, Object> paramsItem = new HashMap<String, Object>();
-			paramsItem.put("group", issueEvent.getChangeLog().getLong("id"));
-			paramsItem.put("field", "Project");
-			paramsItem.put("fieldtype", "jira");
-			
-			List<GenericValue> changeItems = delegator.findByAnd("ChangeItem", paramsItem);
-			for (GenericValue changeItem : changeItems) {
-				oldProjectId = changeItem.getString("oldvalue");
-			}
-			if (!oldProjectId.isEmpty()){
-				SladiatorConfigModel config = new SladiatorConfigModel(pluginSettings.get(oldProjectId));
-				if (config.sendToSladiator()) {
-					String oldKey = "";
-					paramsItem.put("field", "Key");
-					changeItems = delegator.findByAnd("ChangeItem", paramsItem);
-					for (GenericValue changeItem : changeItems) {
-						oldKey = changeItem.getString("oldstring");
-					}
-					Runnable transportDelete = new SladiatorTransportDelete(config,oldKey);
-					new Thread(transportDelete).start();
-				}
-			}
-		}
-
-		
-		SladiatorConfigModel configuration = new SladiatorConfigModel(pluginSettings.get(issue.getProjectObject().getId().toString()));
-		if (configuration.sendToSladiator()) {
-			if (eventTypeId == EventType.ISSUE_DELETED_ID) {
-				Runnable transport = new SladiatorTransportDelete(configuration,issue.getKey());
-				new Thread(transport).start();
-			} else {
+//		if (this.validEventsList.contains(eventTypeId)) {
+			PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
+			SladiatorConfigModel configuration = new SladiatorConfigModel(pluginSettings.get(issue.getProjectObject().getId().toString()));
+			if (configuration.sendToSladiator()) {
 				Runnable transport = new SladiatorTransport(configuration, this.jiraUrl,eventTypeId ,issue, this.avatarService);
 				new Thread(transport).start();
 			}
-			
-		}
+//		}
 	}
 	public static void addFailedIssue(String project, String key) {
 		PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
@@ -127,7 +85,7 @@ public class SladiatorIssueListener implements InitializingBean, DisposableBean 
 		pluginSettings.put("service_url",url);
 	}
 	public static String getSource() {
-		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v1.1.8";
+		return "JIRA "+applicationProperties.getVersion()+"; jira-plugin v1.1.2";
 	}
 	/**
 	 * Constructor.

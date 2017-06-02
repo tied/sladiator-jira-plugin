@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import com.atlassian.crowd.embedded.api.User;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.event.type.EventType;
 import com.atlassian.jira.issue.Issue;

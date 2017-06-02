@@ -5,15 +5,15 @@ import java.net.URI;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.user.ApplicationUser;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.atlassian.core.ofbiz.CoreFactory;
+import com.atlassian.crowd.embedded.api.User;
+import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.avatar.Avatar;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.bc.project.component.ProjectComponent;
@@ -35,7 +37,6 @@ import com.atlassian.jira.issue.label.Label;
 import com.atlassian.jira.issue.link.IssueLink;
 import com.atlassian.jira.ofbiz.DefaultOfBizDelegator;
 import com.atlassian.jira.ofbiz.OfBizDelegator;
-import com.atlassian.jira.user.ApplicationUser;
 import com.atlassian.jira.util.collect.MapBuilder;
 import com.atlassian.jira.util.json.JSONException;
 import com.atlassian.jira.util.json.JSONObject;
@@ -91,16 +92,15 @@ public class SladiatorTransport implements Runnable {
 		} else {
 			json.putOpt("due_date", JSONObject.NULL);
 		}
-		if (issue.getPriority() != null) {
-			json.putOpt("priority", issue.getPriority().getName());
+		if (issue.getPriorityObject() != null) {
+			json.putOpt("priority", issue.getPriorityObject().getName());
 		}
-		json.putOpt("issue_type", issue.getIssueType().getName());
-		json.putOpt("status", issue.getStatus().getName());
+		json.putOpt("issue_type", issue.getIssueTypeObject().getName());
+		json.putOpt("status", issue.getStatusObject().getName());
 		json.putOpt("project", issue.getProjectObject().getKey());
 		json.putOpt("url", jiraUrl+"/browse/" + issue.getKey());
 		List<HashMap<String,String>> links = new ArrayList<HashMap<String,String>>();
 		
-		//Iterator<IssueLink> link = ComponentManager.getInstance().getIssueLinkManager().getInwardLinks(issue.getId()).iterator();
 		Iterator<IssueLink> link = ComponentAccessor.getIssueLinkManager().getInwardLinks(issue.getId()).iterator();
 		while (link.hasNext()) {
 			IssueLink currentLink = link.next();
@@ -109,7 +109,6 @@ public class SladiatorTransport implements Runnable {
 			map.put("link",currentLink.getIssueLinkType().getInward());
 			links.add(map);
 		}
-		//link = ComponentManager.getInstance().getIssueLinkManager().getOutwardLinks(issue.getId()).iterator();
 		link = ComponentAccessor.getIssueLinkManager().getOutwardLinks(issue.getId()).iterator();
 		while (link.hasNext()) {
 			IssueLink currentLink = link.next();
@@ -127,7 +126,7 @@ public class SladiatorTransport implements Runnable {
 		}
 		json.putOpt("labels", labels);
 		
-		Iterator<ProjectComponent> component = issue.getComponents().iterator();
+		Iterator<ProjectComponent> component = issue.getComponentObjects().iterator();
 		List<String> components = new ArrayList<String>();
 		while (component.hasNext()) {
 			components.add(component.next().getName());
@@ -135,16 +134,17 @@ public class SladiatorTransport implements Runnable {
 		json.putOpt("components", components);
 		
 		if (collectAssignee) {
-			ApplicationUser assignee = issue.getAssignee(); //issue.getAssigneeUser();
+			ApplicationUser assignee = issue.getAssigneeUser();
 			if (assignee != null) {
 				json.putOpt("assignee", assignee.getDisplayName());
 				json.putOpt("assignee_email", assignee.getEmailAddress());
 				URI jira_uri = URI.create(jiraUrl);
-				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee, Avatar.Size.LARGE)));
+				json.putOpt("assignee_avatar_url", jira_uri.resolve(this.avatarService.getAvatarURL(assignee, assignee.getName(), Avatar.Size.LARGE)));
 			}
 		}
-		if (issue.getResolution() != null) {
-			json.putOpt("resolution", issue.getResolution().getName());
+
+		if (issue.getResolutionObject() != null) {
+			json.putOpt("resolution", issue.getResolutionObject().getName());
 			json.putOpt("resolution_date", this.dateFormat.format(issue.getResolutionDate()));
 //			json.putOpt("resolution_date", issue.getResolutionDate());
 		} else {
@@ -153,7 +153,7 @@ public class SladiatorTransport implements Runnable {
 		}
 		json.putOpt("transitions", getTransitions(issue));
 		
-		CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager();//ComponentManager.getInstance().getCustomFieldManager();
+		CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager();
 		
 		if (!this.config.getCustomField1().isEmpty()) {
 			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField1());
@@ -190,54 +190,16 @@ public class SladiatorTransport implements Runnable {
 		} else {
 			json.putOpt("custom_field3", JSONObject.NULL);
 		}
-		if (!this.config.getCustomField4().isEmpty()) {
-			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField4());
-			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
-			if (value != null) {
-				json.putOpt("custom_field4", value);
-			} else {
-				json.putOpt("custom_field4", JSONObject.NULL);
-			}
-		} else {
-			json.putOpt("custom_field4", JSONObject.NULL);
-		}
-		if (!this.config.getCustomField5().isEmpty()) {
-			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField5());
-			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
-			if (value != null) {
-				json.putOpt("custom_field5", value);
-			} else {
-				json.putOpt("custom_field5", JSONObject.NULL);
-			}
-		} else {
-			json.putOpt("custom_field5", JSONObject.NULL);
-		}
-		if (!this.config.getCustomField6().isEmpty()) {
-			CustomField field = customFieldManager.getCustomFieldObject(this.config.getCustomField6());
-			String value = SladiatorCustomFieldNormalizer.getValue(field.getCustomFieldType(), field, issue);
-			if (value != null) {
-				json.putOpt("custom_field6", value);
-			} else {
-				json.putOpt("custom_field6", JSONObject.NULL);
-			}
-		} else {
-			json.putOpt("custom_field6", JSONObject.NULL);
-		}
 		return json;
 	}
 	public List<JSONObject> getTransitions(Issue issue) throws JSONException {
-		OfBizDelegator delegator = ComponentAccessor.getOfBizDelegator();//new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
+		OfBizDelegator delegator = new DefaultOfBizDelegator(CoreFactory.getGenericDelegator());
 		Map<String, Long> params = MapBuilder.build("issue", issue.getId());
 		List<GenericValue> changeGroups = delegator.findByAnd("ChangeGroup", params);
-		
-		Collections.sort(changeGroups, new Comparator<GenericValue>() {
-			public int compare(GenericValue o1, GenericValue o2) {
-	        	return o1.getTimestamp("created").compareTo(o2.getTimestamp("created"));
-	        }
-	    });
+
 		List<JSONObject> retList = new ArrayList<JSONObject>();
-		Timestamp entered_at = issue.getCreated();
 		
+		Timestamp entered_at = issue.getCreated();
 		for (GenericValue changeGroup : changeGroups) {
 			// starting from 4.4
 			// Map<String, ? extends Object> paramsItem =
@@ -255,10 +217,8 @@ public class SladiatorTransport implements Runnable {
 //				json.put("entered_at", entered_at);
 				json.put("exited_at", this.dateFormat.format(changeGroup.getTimestamp("created")));
 //				json.put("exited_at", changeGroup.getTimestamp("created"));
-				//json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
-				//json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
-				json.put("status_to", ComponentAccessor.getConstantsManager().getStatus(changeItem.getString("newvalue")).getName());
-				json.put("status", ComponentAccessor.getConstantsManager().getStatus(changeItem.getString("oldvalue")).getName());
+				json.put("status_to", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("newvalue")).getName());
+				json.put("status", ComponentAccessor.getConstantsManager().getStatusObject(changeItem.getString("oldvalue")).getName());
 				retList.add(json);
 				entered_at = changeGroup.getTimestamp("created");
 				// Deprecated. Use ComponentAccessor instead. Since v4.4.
@@ -270,7 +230,7 @@ public class SladiatorTransport implements Runnable {
 		JSONObject json = new JSONObject();
 		json.put("entered_at", this.dateFormat.format(entered_at));
 //		json.put("entered_at", entered_at);
-		json.put("status", issue.getStatus().getName());
+		json.put("status", issue.getStatusObject().getName());
 		retList.add(json);
 		
 		return retList;
@@ -280,7 +240,7 @@ public class SladiatorTransport implements Runnable {
 		int statusCode = 0;
 		String status = "";
 		GetMethod httpMethod = new GetMethod(url+"/api/ping");
-		httpMethod.setRequestHeader("X-SLA-Token", token);
+		httpMethod.setRequestHeader("SLA_TOKEN", token);
 		try {
 			statusCode = client.executeMethod(httpMethod);
 		} catch (Exception e) {
@@ -304,14 +264,20 @@ public class SladiatorTransport implements Runnable {
 			if (eventTypeId.equals(EventType.ISSUE_CREATED_ID)) {
 				PostMethod httpMethod = new PostMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/");
 				httpMethod.setRequestHeader("Content-Type", "application/json");
-				httpMethod.setRequestHeader("X-SLA-Token", this.config.getSlaToken());
+				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
+				statusCode = client.executeMethod(httpMethod);
+			} else if (eventTypeId.equals(EventType.ISSUE_DELETED_ID)) {
+				DeleteMethod httpMethod = new DeleteMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
+				httpMethod.setRequestHeader("Content-Type", "application/json");
+				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
+
 				statusCode = client.executeMethod(httpMethod);
 			} else {
 				PutMethod httpMethod = new PutMethod(SladiatorIssueListener.getServiceUrl() + "/api/tickets/" + issue.getKey());
 				httpMethod.setRequestHeader("Content-Type", "application/json");
-				httpMethod.setRequestHeader("X-SLA-Token", this.config.getSlaToken());
+				httpMethod.setRequestHeader("SLA_TOKEN", this.config.getSlaToken());
 
 				httpMethod.setRequestEntity(new StringRequestEntity(body, "application/json", null));
 				statusCode = client.executeMethod(httpMethod);

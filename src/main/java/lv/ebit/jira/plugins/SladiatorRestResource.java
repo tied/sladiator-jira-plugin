@@ -19,6 +19,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.user.ApplicationUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +30,13 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.crowd.embedded.api.User;
+import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.avatar.AvatarService;
 import com.atlassian.jira.issue.search.SearchProvider;
-import com.atlassian.jira.permission.ProjectPermissions;
+import com.atlassian.jira.project.DefaultProjectManager;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.security.PermissionManager;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.component.ComponentAccessor;
 
 
 @Path("/")
@@ -95,7 +97,7 @@ public class SladiatorRestResource {
 			public Object doInTransaction() {
 				PluginSettings pluginSettings = pluginSettingsFactory.createSettingsForKey(SladiatorConfigModel.KEY);
 				pluginSettings.remove(config.getProject());
-				pluginSettings.remove("errors"+config.getProject());
+				pluginSettings.get("errors"+config.getProject());
 				return true;
 			}
 		});
@@ -132,7 +134,7 @@ public class SladiatorRestResource {
 		if (errors.isEmpty()) {
 			SladiatorTeleport job = new SladiatorTeleport(config, this.jiraUrl, date_from, this.searchProvider, this.avatarService, ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(teleport.project)).getProjectLead());
 			job.run();
-			String success = job.getTotalProcessed() + " issues sent to SLAdiator";
+			String success = job.getTotalProcessed() + " issues sent to RealSLA";
 			return Response.ok(success).build();
 		} else {
 			return Response.serverError().entity(errors).build();
@@ -227,11 +229,9 @@ public class SladiatorRestResource {
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
 		Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId));
 		PermissionManager permissionManager = ComponentAccessor.getPermissionManager();
-		//com.atlassian.crowd.embedded.api.User user = (User) userManager.resolve(userManager.getRemoteUsername(request));
-		com.atlassian.jira.user.util.UserManager users = ComponentAccessor.getUserManager();
-		ApplicationUser user = users.getUserByName(userManager.getRemoteUsername(request));
+		ApplicationUser user = (ApplicationUser) userManager.resolve(userManager.getRemoteUsername(request));
 		
-		if (user != null && project.getLeadUserName().equals(user.getName()) || permissionManager.hasPermission(ProjectPermissions.ADMINISTER_PROJECTS, project, user)) {
+		if (project.getProjectLead().getName() == user.getName() || permissionManager.hasPermission(23, project, user)) {
 			return true;
 		}
 		return false;

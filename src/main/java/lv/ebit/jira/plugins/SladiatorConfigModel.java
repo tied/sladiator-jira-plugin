@@ -106,54 +106,6 @@ public final class SladiatorConfigModel {
 			return "";
 		}
 	}
-	@XmlElement
-	private String custom_field4="";
-	public String getCustomField4(){
-		return this.custom_field4;
-	}
-	
-	public void setCustomField4(String value){
-		this.custom_field4 = value;
-	}
-	public String checkedCustomField4(String value) {
-		if (this.custom_field4.equals(value)) {
-			return "selected=\"selected\"";
-		} else {
-			return "";
-		}
-	}
-	@XmlElement
-	private String custom_field5="";
-	public String getCustomField5(){
-		return this.custom_field5;
-	}
-	
-	public void setCustomField5(String value){
-		this.custom_field5 = value;
-	}
-	public String checkedCustomField5(String value) {
-		if (this.custom_field5.equals(value)) {
-			return "selected=\"selected\"";
-		} else {
-			return "";
-		}
-	}
-	@XmlElement
-	private String custom_field6="";
-	public String getCustomField6(){
-		return this.custom_field6;
-	}
-	
-	public void setCustomField6(String value){
-		this.custom_field6 = value;
-	}
-	public String checkedCustomField6(String value) {
-		if (this.custom_field6.equals(value)) {
-			return "selected=\"selected\"";
-		} else {
-			return "";
-		}
-	}
 	public boolean sendToSladiator() {
 		return !this.getSlaToken().isEmpty();
 	}
@@ -185,9 +137,6 @@ public final class SladiatorConfigModel {
 			json.put("custom_field1", this.getCustomField1());
 			json.put("custom_field2", this.getCustomField2());
 			json.put("custom_field3", this.getCustomField3());
-			json.put("custom_field4", this.getCustomField4());
-			json.put("custom_field5", this.getCustomField5());
-			json.put("custom_field6", this.getCustomField6());
 		} catch (JSONException e) {
 			SladiatorRestResource.log.error("Error in SladiatorConfigModel.toString:" + e.getMessage());
 		}
@@ -203,9 +152,6 @@ public final class SladiatorConfigModel {
 				this.setCustomField1(json.get("custom_field1").toString());
 				this.setCustomField2(json.get("custom_field2").toString());
 				this.setCustomField3(json.get("custom_field3").toString());
-				this.setCustomField4(json.get("custom_field4").toString());
-				this.setCustomField5(json.get("custom_field5").toString());
-				this.setCustomField6(json.get("custom_field6").toString());
 			} catch (JSONException e) {
 				SladiatorRestResource.log.error("Error in SladiatorConfigModel.SladiatorConfigModel:" + e.getMessage());
 			}

@@ -5,6 +5,8 @@
 		<version>${project.version}</version>
 		<vendor name="${project.organization.name}" url="${project.organization.url}" />
 		<param name="configure.url">/plugins/servlet/sladiator/config</param>
+		<param name="plugin-icon">images/sladiatorlogo1616.png</param>
+		<param name="plugin-logo">images/sladiatorlogo4242.png</param>
 	</plugin-info>
   
   <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />
@@ -40,6 +42,12 @@
       <url-pattern>/sladiator/config</url-pattern>
       <description>SLAdiator Admin configuration GUI</description>
   </servlet>
+  
+  <web-item key="jira-menu-item" name="SLAdiator Admin Config" section="system.admin/globalsettings" weight="10" application="jira">
+      <description>Link to SLAdiator Admin configuration page.</description> 
+      <label key="SLAdiator" /> 
+      <link linkId="sladiator-admin-config">/plugins/servlet/sladiator/config</link> 
+  </web-item>
   
   <web-resource name="SLAdiator assets" key="assets"> 
       <dependency>com.atlassian.auiplugin:ajs</dependency> 
