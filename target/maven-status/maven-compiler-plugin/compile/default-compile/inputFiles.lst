@@ -1,0 +1,9 @@
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorConfigModel.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorProjectTab.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorRestResource.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorCustomFieldNormalizer.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorJanitor.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorTeleport.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorAdminServlet.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorTransport.java
+/home/admin/Desktop/sladiator-jira-plugin-master/src/main/java/lv/ebit/jira/plugins/SladiatorIssueListener.java

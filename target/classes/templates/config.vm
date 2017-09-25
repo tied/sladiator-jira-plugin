@@ -1,0 +1,164 @@
+$webResourceManager.requireResource("jira.webresources:calendar")
+$webResourceManager.requireResource("jira.webresources:calendar-en")
+$webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:assets")
+<div class="column full" id="primary">
+	<div class="content">
+		<p>SLAdiator is monitoring your ticket workflow, calculates spent
+			time according your Service Level Agreement and warns you before SLA
+			breach!</p>
+		#if ( $isProjectLead )
+		  <input type="hidden" id="baseURL" value="$baseURL"/>
+		  <input type="hidden" id="serviceURL" value="$serviceURL"/>
+      <div class="module">
+	      <div class="mod-header">
+	        <h3>SLAdiator configuration</h3>
+	      </div>
+	      <div class="mod-content">
+	        <form class="aui" action="#" method="post" id="sladiator-project">
+	          <input type="hidden" name="project" value="$projectId"/>
+	          <div class="warningBox" style="display:none;"></div>
+	          <div class="infoBox" style="display:none;"></div>
+	          <fieldset>
+	            <div class="field-group">
+	              <label for="sla_token">SLA token
+	                <span class="aui-icon icon-required"></span>
+	                <span class="content">required</span>
+	              </label>
+	              <input class="text long-field" maxlength="50" name="sla_token" type="text" id="sla_token" value="$sla.getSlaToken()" />
+	              <div class="description">Copy SLA token given in SLAdiator.com configuration page.</div>
+	            </div>
+	            <div class="field-group">
+                 <label for="send_assignee">Include assignee?</label>
+                 <input class="checkbox " name="send_assignee" type="checkbox" value="1" id="send_assignee" $sla.checkedSendAssignee()>
+              </div>
+              <fieldset>
+                <legend>Include custom fields if you need them for SLA</legend>
+                <div class="field-group">
+                  <label for="custom_field1">Custom field 1</label>
+                   <select name="custom_field1" id="custom_field1">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField1($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+                <div class="field-group">
+                  <label for="custom_field2">Custom field 2</label>
+                   <select name="custom_field2" id="custom_field2">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField2($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+                <div class="field-group">
+                  <label for="custom_field3">Custom field 3</label>
+                   <select name="custom_field3" id="custom_field3">
+                     <option value=""></option>
+                     #foreach ($customField in $customFields) 
+                       <option value="$customField.getId()" $sla.checkedCustomField3($customField.getId())>$customField.getName()</option>
+                     #end
+                   </select>
+                </div>
+              </fieldset>
+	          </fieldset>
+	          <div class="buttons-container content-footer">
+	            <div class="buttons">
+	               <input type="submit" name="save" id="saveSLA" value="Save and Test" accesskey="s" class="button spaced " />
+	               <input type="button" name="visit" id="visitSLA" value="Visit SLA configuration in SLAdiator" class="button spaced " />
+	            </div>
+	          </div>
+	        </form>
+	      </div>
+	    </div>
+	    #if (!$errors.isEmpty())
+		    <div class="module">
+		      <div class="mod-header">
+		        <h3>Tickets not sent</h3>
+		      </div>
+		      <div class="mod-content">
+		        <form class="aui" action="#" method="post" id="sladiator-janitor">
+            <input type="hidden" name="project" value="$projectId"/>
+			        <div class="warningBox" style="display:none;"></div>
+			        <div class="noteBox">
+			          <p>JIRA was not able to send following tickets.</p>
+			          <p>You can try to send these tickets again by pressing "Send again".</p>
+			          <p>If error lists still indicates problems with some tickets, the reasons could be:</p>
+			          <ul>
+			            <li>JIRA can not reach SLAdiator - please check it by pressing "Test connection" above</li>
+			            <li>SLAdiator.com is down for maintenance - please check that <a href="https://sladiator.com">sladiator.com</a> is reachable</li>
+			          </ul>
+			        </div>
+			        #foreach ($error in $errors)
+	              #if (!$error.isEmpty()) 
+	                <a href="$issue_url$error">$error</a>
+	               #end
+	            #end
+				        <div class="buttons-container content-footer">
+				          <div class="buttons">
+				            <input type="submit" name="save" id="janitorSLA" value="Send again" class="button spaced" />
+				           </div>
+				        </div>
+				    </form>
+		      </div>
+		    </div>
+		   #end
+	    <div class="module">
+	      <div class="mod-header">
+	        <h3>Send old issues to SLAdiator</h3>
+	      </div>
+	      <div class="mod-content">
+	        <form class="aui" action="#" method="post" id="sladiator-teleprot">
+	          <input type="hidden" name="project" value="$projectId"/>
+	          <div class="warningBox" style="display:none;"></div>
+	          <div class="infoBox" style="display:none;"></div>
+	          <div class="field-group">
+	            <label for="teleport_date_from">Starting from</label> 
+	            <input class="text medium-field " maxlength="150" name="date_from" type="text" id="date_from" />
+	            <a href="#" id="date_from-trigger" title="Select a date">
+	              <span class="aui-icon icon-date">Select a date</span>
+	            </a>
+	            <div class="description">Date from which tickets needs to be sent to SLAdiator.</div>
+	            <script type="text/javascript">
+	                Calendar.setup({
+	                  firstDay : 0,
+	                  inputField : 'date_from',
+	                  button : 'date_from-trigger',
+	                  align : 'Br',
+	                  singleClick : true,
+	                  useISO8601WeekNumbers : false,
+	                  ifFormat : '%e/%m/%Y'
+	                });
+	              </script>
+	          </div>
+	          <div class="buttons-container content-footer">
+	            <div class="buttons">
+	              <input type="submit" name="save" id="teleportSLA" value="Send" class="button spaced">
+	             </div>
+	          </div>
+	        </form>
+	      </div>
+	    </div>
+	    <div class="module">
+        <div class="mod-header">
+          <h3>Delete SLAdiator configuration</h3>
+        </div>
+        <form class="aui" action="#" method="post" id="sladiator-delete">
+          <input type="hidden" name="project" value="$projectId"/>
+          <div class="buttons-container content-footer">
+            <div class="buttons">
+              <input type="submit" name="save" id="deleteSLA" value="Delete my configuration" class="button spaced">
+            </div>
+          </div>
+        </form>
+      </div>
+	  #else
+	   #if ($sla.getSlaToken().isEmpty())
+	     <div class="infoBox" style="">This project is not yet configured to use SLAdiator. <a href="https://sladiator.com/" target="_blank">Visit SLAdiator and try it out.</a></div>
+	   #else
+	     <div class="infoBox" style="">This project is configured to use SLAdiator. <a href="https://sladiator.com/sla_token/$sla.getSlaToken()" target="_blank">Visit SLAdiator for your project.</a></div>
+	   #end
+		#end
+	</div>
+	<div class="aui-blanket" id="freezer" style="display: none;"></div>
+</div>

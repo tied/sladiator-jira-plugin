@@ -1,0 +1,14 @@
+lv/ebit/jira/plugins/SladiatorTransport.class
+lv/ebit/jira/plugins/SladiatorCustomFieldNormalizer.class
+lv/ebit/jira/plugins/SladiatorRestResource$TeleportModel.class
+lv/ebit/jira/plugins/SladiatorJanitor.class
+lv/ebit/jira/plugins/SladiatorRestResource$1.class
+lv/ebit/jira/plugins/SladiatorIssueListener.class
+lv/ebit/jira/plugins/SladiatorRestResource.class
+lv/ebit/jira/plugins/SladiatorRestResource$2.class
+lv/ebit/jira/plugins/SladiatorAdminServlet.class
+lv/ebit/jira/plugins/SladiatorRestResource$JanitorModel.class
+lv/ebit/jira/plugins/SladiatorRestResource$AdminConfigModel.class
+lv/ebit/jira/plugins/SladiatorConfigModel.class
+lv/ebit/jira/plugins/SladiatorProjectTab.class
+lv/ebit/jira/plugins/SladiatorTeleport.class

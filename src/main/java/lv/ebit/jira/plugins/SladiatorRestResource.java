@@ -229,7 +229,8 @@ public class SladiatorRestResource {
 	private boolean isAuthorized(HttpServletRequest request, String projectId) {
 		Project project = ComponentAccessor.getProjectManager().getProjectObj(Long.valueOf(projectId));
 		PermissionManager permissionManager = ComponentAccessor.getPermissionManager();
-		ApplicationUser user = (ApplicationUser) userManager.resolve(userManager.getRemoteUsername(request));
+		String requestUser = userManager.getRemoteUsername(request);
+		ApplicationUser user = ComponentAccessor.getUserManager().getUserByName(requestUser);
 		
 		if (project.getProjectLead().getName() == user.getName() || permissionManager.hasPermission(23, project, user)) {
 			return true;

@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>SLAdiator global configuration</title>
+    <meta name="decorator" content="atl.admin" />
+    <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
+    $webResourceManager.requireResource("lv.ebit.jira.plugins.sladiator:admin_assets")
+  </head>
+  <body>
+    <input type="hidden" id="baseURL" value="$baseURL"/>
+    <table class="jiraform maxWidth" >
+    <tr class="titlerow">
+        <td class="jiraformheader">
+          <h3 class="formtitle">SLAdiator global configuration page</h3>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <form class="aui" action="#" method="post" id="sladiator-admin">
+            <div class="warningBox" style="display:none;"></div>
+            <div class="infoBox" style="display:none;"></div>
+            <fieldset>
+              <div class="field-group">
+                <label for="service_url">SLAdiator URL
+                  <span class="aui-icon icon-required"></span>
+                  <span class="content">required</span>
+                </label>
+                <input class="text long-field" maxlength="50" name="service_url" type="text" id="service_url" value="$service_url" />
+                <div class="description">Change SLAdiator service URL if you bought your local copy of SLAdiator.</div>
+              </div>
+             </fieldset>
+             <div class="buttons-container content-footer">
+              <div class="buttons">
+                 <input type="submit" name="save" id="saveSLA" value="Save" accesskey="s" class="button spaced " />
+                 <input type="button" name="test" id="testSLA" value="Test connection" class="button spaced " />
+                 <input type="button" name="visit" id="visitSLA" value="Visit SLA configuration in SLAdiator" class="button spaced " />
+              </div>
+            </div>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
